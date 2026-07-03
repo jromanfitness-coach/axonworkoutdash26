@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TF Workout Dashboard v20</title>
+<title>Axon Workout Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   :root{
@@ -574,6 +574,15 @@ h1{letter-spacing:-.055em}
     .hour-timer-panel .hour-timer-value{font-size:clamp(52px,10vw,82px)}
   }
 
+
+/* v33 Client Accounts: local PIN directory */
+.client-accounts-card{width:min(1180px,96vw)!important;max-height:90vh;overflow:auto}
+.client-account-summary{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;border:1px solid rgba(100,180,255,.40);border-radius:22px;padding:16px 18px;background:linear-gradient(135deg,rgba(31,140,255,.12),rgba(255,255,255,.025));margin:6px 0 16px}
+.client-account-summary h3{margin:4px 0 0;font-size:24px;letter-spacing:-.04em}.client-account-summary p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.4}
+.client-account-stat{min-width:100px;text-align:center;border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(5,7,10,.42)}.client-account-stat b{display:block;font-size:26px;color:var(--cream)}.client-account-stat span{display:block;margin-top:2px;color:var(--muted);font-size:10px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
+.client-account-toolbar{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:14px}.client-account-toolbar input{width:100%;border:1px solid var(--line);background:#08101a;color:var(--cream);border-radius:14px;padding:13px;outline:none}.client-account-toolbar input:focus,.client-pin-input:focus,.client-name-input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(31,140,255,.15)}
+.client-account-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.client-account-tile{position:relative;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:19px;padding:15px;background:linear-gradient(160deg,rgba(16,26,38,.98),rgba(8,13,20,.96));min-height:174px;display:grid;align-content:start;gap:11px;box-shadow:0 14px 30px rgba(0,0,0,.22);transition:.16s ease}.client-account-tile:hover{transform:translateY(-2px);border-color:rgba(100,180,255,.55);box-shadow:0 18px 44px rgba(31,140,255,.14)}.client-account-top{display:flex;gap:10px;align-items:center}.client-avatar{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;border:1px solid rgba(100,180,255,.50);background:rgba(31,140,255,.16);color:var(--cream);font-weight:1000}.client-account-top strong{font-size:17px;letter-spacing:-.03em}.client-account-top small{display:block;color:var(--soft);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}.client-account-field{display:grid;gap:5px}.client-account-field span{font-size:10px;color:var(--muted);font-weight:900;letter-spacing:.12em;text-transform:uppercase}.client-name-input,.client-pin-input{width:100%;border:1px solid rgba(255,255,255,.15);background:#08101a;color:var(--cream);border-radius:11px;padding:10px;outline:none}.client-account-actions{display:flex;gap:8px;justify-content:space-between;align-items:center}.client-account-save{border:1px solid rgba(100,180,255,.58);background:rgba(31,140,255,.18);color:var(--cream);border-radius:11px;padding:8px 10px;font-size:12px;font-weight:950;cursor:pointer}.client-account-delete{border:1px solid rgba(255,107,107,.42);background:rgba(255,107,107,.11);color:var(--red);border-radius:11px;padding:8px 10px;font-size:12px;font-weight:950;cursor:pointer}.client-account-note{color:var(--muted);font-size:12px;line-height:1.4;margin-top:2px}@media(max-width:900px){.client-account-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.client-accounts-card{width:min(100vw,100%)!important;border-radius:22px;padding:16px!important}.client-account-summary{grid-template-columns:1fr}.client-account-toolbar{grid-template-columns:1fr}.client-account-grid{grid-template-columns:1fr}.client-account-tile{min-height:0}.client-account-summary h3{font-size:22px}}
+
 </style>
 </head>
 <body class="fullscreen-clean one-workout">
@@ -656,8 +665,8 @@ h1{letter-spacing:-.055em}
     <button type="button" class="quick-btn" onclick="changeTileZoom(10)" title="Increase Tile Size">
       <span class="quick-icon">+</span><span class="quick-label">Zoom In</span>
     </button>
-    <button type="button" class="quick-btn" onclick="openAttendanceModal()" title="Class Attendance">
-      <span class="quick-icon">👥</span><span class="quick-label">Group</span>
+    <button type="button" class="quick-btn" onclick="openClientAccounts()" title="Client Portal Access">
+      <span class="quick-icon">👥</span><span class="quick-label">Clients</span>
     </button>
     <button type="button" class="quick-btn" onclick="openCalendarView()" title="Program Calendar">
       <span class="quick-icon">▦</span><span class="quick-label">Calendar</span>
@@ -818,38 +827,20 @@ h1{letter-spacing:-.055em}
   </div>
 </section>
 
-<section class="modal-overlay" id="attendanceModal">
-  <div class="modal-card">
+<section class="modal-overlay" id="clientAccountsModal" aria-hidden="true">
+  <div class="modal-card client-accounts-card" role="dialog" aria-modal="true" aria-labelledby="clientAccountsTitle">
     <div class="modal-head">
       <div>
-        <div class="modal-title">Class Attendance</div>
-        <div class="modal-sub" id="attendanceContext">Track class headcount, client notes, and admin notes for this session.</div>
+        <div class="builder-kicker">Client Portal</div>
+        <div class="modal-title" id="clientAccountsTitle">Client Management</div>
+        <div class="modal-sub">Create a name and PIN for each client. This access list is saved locally in this browser and is used by the view-only client workout portal.</div>
       </div>
-      <button type="button" class="modal-close" onclick="closeAttendanceModal()">Close</button>
+      <button type="button" class="modal-close" onclick="closeClientAccounts()">Close</button>
     </div>
-    <div class="counter-wrap">
-      <button type="button" class="counter-btn" onclick="changeAttendance(-1)">−</button>
-      <div class="counter-display">
-        <div class="counter-num" id="attendanceCount">0</div>
-        <div class="counter-label">Clients Present</div>
-      </div>
-      <button type="button" class="counter-btn" onclick="changeAttendance(1)">+</button>
-    </div>
-    <div class="form-grid">
-      <div class="field">
-        <label for="clientNotes">Client Notes</label>
-        <textarea id="clientNotes" placeholder="Examples: modifications, client needs, injuries, standout performance..."></textarea>
-      </div>
-      <div class="field">
-        <label for="adminNotes">Admin Notes</label>
-        <textarea id="adminNotes" placeholder="Examples: equipment issue, room setup, staff follow-up, programming note..."></textarea>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button type="button" class="modal-btn" onclick="saveAttendance()">Save Attendance</button>
-      <button type="button" class="modal-btn" onclick="exportAttendanceTXT()">Export TXT</button>
-      <button type="button" class="modal-btn" onclick="exportAttendanceXLSX()">Export XLSX</button>
-    </div>
+    <div class="client-account-summary"><div><div class="builder-kicker">Client directory</div><h3>Workout access PINs</h3><p>Use the tiles below to add, edit, or remove client portal access. Keep a TXT backup for your workout board separately.</p></div><div class="client-account-stat"><b id="clientAccountCount">0</b><span>Clients</span></div></div>
+    <div class="client-account-toolbar"><input id="clientAccountSearch" type="search" placeholder="Search client name or PIN" oninput="renderClientAccounts()"><button type="button" class="builder-save-btn" onclick="addClientAccount()">+ Client</button></div>
+    <div class="client-account-grid" id="clientAccountGrid"></div>
+    <div class="client-account-note">Local-only access: these PINs are stored in this dashboard browser. They will work for the client portal on the same Netlify site/browser profile. A shared database or published access list is required before assigning individual PINs across separate devices.</div>
   </div>
 </section>
 
@@ -1178,7 +1169,7 @@ var lastAutoChange = Date.now();
 var attendanceDraft = {count:0, clientNotes:"", adminNotes:""};
 var reviewDraft = {intensity:0, pacing:0, support:0};
 
-var ids = ["loginGate","loginUser","loginPass","loginError","screen","menu","weekSelect","classSelect","classList","stationGrid","weekTitle","brandKicker","mainHeading","programTitle","programDesc","timerStatus","autoStatus","oneWorkoutStatus","syncStatus","clientPortalStatus","tileZoomStatus","footerLeft","footerCenter","footerRight","clock","date","hourTimerCard","hourTimer","hourTimerProgress","admin","editor","editorStatus","modeValue","classMode","modeSub","weeklyOverlay","weekChips","overviewTop","overviewMid","overviewStatus","weeklyMusclePanel","calendarOverlay","calendarTitle","calendarContent","calendarWeekMode","calendarMonthMode","calendarEditorOverlay","calendarEditorTitle","calendarEditorSub","calendarEditDate","calendarEditProgram","calendarEditTime","calendarEditNote","calendarTypeToggle","calendarDeleteBtn","calendarEditorStatus","modeEditorOverlay","modeEditorSub","modeChoiceToggle","modeEditWork","modeEditRest","modeEditorFields","modeEditorStatus","attendanceModal","attendanceContext","attendanceCount","clientNotes","adminNotes","reviewModal","reviewContext","reviewName","intensityStars","pacingStars","supportStars","intensityScore","pacingScore","supportScore","reviewNotes","exportModal","multiStatus","boardImportFile","builderEditor","textEditorWrap","builderEditorTab","txtEditorTab","builderWeekChips","builderClassChips","builderWeekName","builderWeekSummary","builderClassName","builderMode","builderRounds","builderWork","builderRest","builderDesc","builderCircuits","builderSaveMeta","builderSelectionMeta"];
+var ids = ["loginGate","loginUser","loginPass","loginError","screen","menu","weekSelect","classSelect","classList","stationGrid","weekTitle","brandKicker","mainHeading","programTitle","programDesc","timerStatus","autoStatus","oneWorkoutStatus","syncStatus","clientPortalStatus","tileZoomStatus","footerLeft","footerCenter","footerRight","clock","date","hourTimerCard","hourTimer","hourTimerProgress","admin","editor","editorStatus","modeValue","classMode","modeSub","weeklyOverlay","weekChips","overviewTop","overviewMid","overviewStatus","weeklyMusclePanel","calendarOverlay","calendarTitle","calendarContent","calendarWeekMode","calendarMonthMode","calendarEditorOverlay","calendarEditorTitle","calendarEditorSub","calendarEditDate","calendarEditProgram","calendarEditTime","calendarEditNote","calendarTypeToggle","calendarDeleteBtn","calendarEditorStatus","modeEditorOverlay","modeEditorSub","modeChoiceToggle","modeEditWork","modeEditRest","modeEditorFields","modeEditorStatus","clientAccountsModal","clientAccountCount","clientAccountSearch","clientAccountGrid","reviewModal","reviewContext","reviewName","intensityStars","pacingStars","supportStars","intensityScore","pacingScore","supportScore","reviewNotes","exportModal","multiStatus","boardImportFile","builderEditor","textEditorWrap","builderEditorTab","txtEditorTab","builderWeekChips","builderClassChips","builderWeekName","builderWeekSummary","builderClassName","builderMode","builderRounds","builderWork","builderRest","builderDesc","builderCircuits","builderSaveMeta","builderSelectionMeta"];
 var el = {};
 ids.forEach(function(id){ el[id] = document.getElementById(id); });
 
@@ -1980,6 +1971,30 @@ function saveModeEditor(){
 
 function loadOverviewWeekDefault(){activeWeekIndex=overviewWeekIndex;activeClassIndex=0;applyDefaultDisplay();activeCircuitIndex=0;resetCountdown();closeWeeklyView();}
 function currentSessionKey(){var week=getActiveWeek(), program=getActiveProgram(); var d=new Date().toISOString().slice(0,10); return d+" | "+(week.week||"Week")+" | "+(program.name||"Class");}
+
+var CLIENT_ACCOUNTS_KEY = "tfWorkoutDashboardV13ClientAccounts";
+function clientAccountDefaults(){return [{id:"axon_demo",name:"Axon Client Portal",pin:"axon26",createdAt:new Date().toISOString()}];}
+function getClientAccounts(){
+  var list=readJSON(CLIENT_ACCOUNTS_KEY,null);
+  if(!Array.isArray(list) || !list.length){list=clientAccountDefaults();localStorage.setItem(CLIENT_ACCOUNTS_KEY,JSON.stringify(list));}
+  return list.map(function(item,index){return {id:String(item.id||("client_"+index)),name:String(item.name||"Client"),pin:String(item.pin||""),createdAt:item.createdAt||""};});
+}
+function setClientAccounts(list){localStorage.setItem(CLIENT_ACCOUNTS_KEY,JSON.stringify(list));}
+function clientInitials(name){return String(name||"Client").split(/\s+/).filter(Boolean).slice(0,2).map(function(x){return x.charAt(0).toUpperCase();}).join("")||"CL";}
+function openClientAccounts(){closeMenu();renderClientAccounts();el.clientAccountsModal.classList.add("open");el.clientAccountsModal.setAttribute("aria-hidden","false");}
+function closeClientAccounts(){el.clientAccountsModal.classList.remove("open");el.clientAccountsModal.setAttribute("aria-hidden","true");}
+function addClientAccount(){var list=getClientAccounts();list.unshift({id:"client_"+Date.now(),name:"New Client",pin:"",createdAt:new Date().toISOString()});setClientAccounts(list);renderClientAccounts();setTimeout(function(){var first=document.querySelector("[data-client-name='"+list[0].id+"']");if(first){first.focus();first.select();}},40);}
+function renderClientAccounts(){
+  if(!el.clientAccountGrid)return;
+  var list=getClientAccounts(), query=String(el.clientAccountSearch&&el.clientAccountSearch.value||"").trim().toLowerCase();
+  var visible=list.filter(function(item){return !query || item.name.toLowerCase().indexOf(query)>-1 || item.pin.toLowerCase().indexOf(query)>-1;});
+  el.clientAccountCount.textContent=String(list.length);
+  el.clientAccountGrid.innerHTML=visible.length?visible.map(function(item){return '<article class="client-account-tile" data-client-tile="'+escapeHtml(item.id)+'"><div class="client-account-top"><div class="client-avatar">'+escapeHtml(clientInitials(item.name))+'</div><div><strong>'+escapeHtml(item.name)+'</strong><small>Client portal access</small></div></div><label class="client-account-field"><span>Client name</span><input class="client-name-input" data-client-name="'+escapeHtml(item.id)+'" value="'+escapeHtml(item.name)+'" maxlength="48"></label><label class="client-account-field"><span>Portal PIN</span><input class="client-pin-input" data-client-pin="'+escapeHtml(item.id)+'" value="'+escapeHtml(item.pin)+'" maxlength="48" autocomplete="off" placeholder="Create PIN"></label><div class="client-account-actions"><button type="button" class="client-account-save" onclick="saveClientAccount(\''+escapeJs(item.id)+'\')">Save PIN</button><button type="button" class="client-account-delete" onclick="deleteClientAccount(\''+escapeJs(item.id)+'\')">Remove</button></div></article>';}).join(""):'<div class="empty">No client accounts match that search.</div>';
+}
+function escapeJs(v){return String(v||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'");}
+function saveClientAccount(id){var list=getClientAccounts(), nameInput=document.querySelector("[data-client-name='"+CSS.escape(id)+"']"), pinInput=document.querySelector("[data-client-pin='"+CSS.escape(id)+"']");var name=String(nameInput&&nameInput.value||"").trim(),pin=String(pinInput&&pinInput.value||"").trim();if(!name){alert("Add a client name first.");return;}if(!pin){alert("Add a client portal PIN first.");return;}var dupe=list.some(function(x){return x.id!==id && x.pin.toLowerCase()===pin.toLowerCase();});if(dupe){alert("Each client PIN must be unique.");return;}list=list.map(function(x){return x.id===id?{id:x.id,name:name,pin:pin,createdAt:x.createdAt||new Date().toISOString()}:x;});setClientAccounts(list);renderClientAccounts();setClientPortalStatus("Client PIN list saved locally.","sync-good");}
+function deleteClientAccount(id){var list=getClientAccounts();if(list.length<=1){alert("Keep at least one client access PIN available.");return;}var item=list.find(function(x){return x.id===id;});if(!confirm("Remove "+(item?item.name:"this client")+" from local portal access?"))return;setClientAccounts(list.filter(function(x){return x.id!==id;}));renderClientAccounts();}
+
 function getStoredAttendance(){return readJSON("tfDashboardV11Attendance", {});}
 function setStoredAttendance(obj){localStorage.setItem("tfDashboardV11Attendance", JSON.stringify(obj));}
 function openAttendanceModal(){
@@ -2347,7 +2362,7 @@ document.addEventListener("click",function(e){
   if(e.target===el.calendarOverlay)closeCalendarView();
   if(e.target===el.calendarEditorOverlay)closeCalendarEditor();
   if(e.target===el.modeEditorOverlay)closeModeEditor();
-  if(e.target===el.attendanceModal)closeAttendanceModal();
+  if(e.target===el.clientAccountsModal)closeClientAccounts();
   if(e.target===el.reviewModal)closeReviewModal();
   if(e.target===el.exportModal)closeExportModal();
 });
@@ -2356,7 +2371,7 @@ document.addEventListener("keydown",function(e){
   if(el.admin.classList.contains("open")&&key!=="escape")return;
   if(key==="arrowright")nextCircuit(); if(key==="arrowleft")prevCircuit(); if(key==="arrowdown")nextClass(); if(key==="arrowup")prevClass();
   if(key==="f")toggleFullscreen(); if(key===" "){e.preventDefault();toggleCountdown();} if(key==="0")resetCountdown(); if(key==="a")toggleAuto(); if(key==="o")toggleOneWorkout(); if(key==="w")openWeeklyView(); if(key==="c")openCalendarView(); if(key==="g")toggleMultiView(); if(key==="z")changeTileZoom(-10); if(key==="x")changeTileZoom(10); if(key==="e")openAdmin(); if(key==="m")toggleMenu();
-  if(key==="escape"){closeAdmin();closeMenu();closeWeeklyView();closeCalendarView();closeCalendarEditor();closeModeEditor();closeAttendanceModal();closeReviewModal();closeExportModal();}
+  if(key==="escape"){closeAdmin();closeMenu();closeWeeklyView();closeCalendarView();closeCalendarEditor();closeModeEditor();closeClientAccounts();closeReviewModal();closeExportModal();}
 });
 
 applyDefaultDisplay();
