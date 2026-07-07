@@ -64,7 +64,7 @@
   .sync-row{font-size:12px;color:var(--muted);font-weight:800;line-height:1.35;padding:4px 4px 0}
   .sync-good{color:var(--green)} .sync-warn{color:var(--yellow)} .sync-bad{color:var(--red)}
 
-  .quick-actions{display:flex;justify-content:center;align-items:center;gap:9px;padding:1px 6px;margin-top:-5px;flex-wrap:wrap}
+  .quick-actions{display:flex;justify-content:center;align-items:center;gap:9px;padding:1px 6px;margin-top:-5px;flex-wrap:wrap;max-width:980px;margin-left:auto;margin-right:auto}
   .quick-btn{
     min-width:58px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);
     color:var(--cream);border-radius:17px;padding:5px 8px;display:grid;gap:2px;place-items:center;
@@ -669,14 +669,17 @@ h1{letter-spacing:-.055em}
     <button type="button" class="quick-btn" onclick="changeTileZoom(10)" title="Increase Tile Size">
       <span class="quick-icon">+</span><span class="quick-label">Zoom In</span>
     </button>
-    <button type="button" id="clientPortalManagerBtn" class="quick-btn" title="Client Portal Access">
-      <span class="quick-icon">👥</span><span class="quick-label">Clients</span>
-    </button>
     <button type="button" class="quick-btn" onclick="openCalendarView()" title="Program Calendar">
       <span class="quick-icon">▦</span><span class="quick-label">Calendar</span>
     </button>
     <button type="button" class="quick-btn" onclick="openAdmin()" title="Open Local Board">
       <span class="quick-icon">▤</span><span class="quick-label">Local Board</span>
+    </button>
+    <button type="button" class="quick-btn" onclick="openClientPortal()" title="Preview Client Workout Portal">
+      <span class="quick-icon">↗</span><span class="quick-label">Client View</span>
+    </button>
+    <button type="button" id="clientPortalManagerBtn" class="quick-btn" title="Manage Client Access Pins">
+      <span class="quick-icon">👥</span><span class="quick-label">Manage Clients</span>
     </button>
     <button type="button" class="quick-btn" onclick="nextCircuit()" title="Skip Right">
       <span class="quick-icon">⏭</span><span class="quick-label">Skip Right</span>

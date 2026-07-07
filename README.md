@@ -8,3 +8,9 @@ Static Netlify build. No Node build, Functions, environment variables, or depend
 - Client PINs are still saved locally in the admin browser.
 
 Deploy the contents of this folder at the GitHub repository root. In Netlify leave Base directory, Build command, Publish directory, and Functions directory blank.
+
+
+## v35 UI placement
+- Keeps the dashboard home screen unchanged.
+- Moves client actions into the main quick-action control strip beside Local Board and Skip Right.
+- Adds Client View (preview) and Manage Clients controls.
