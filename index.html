@@ -587,6 +587,9 @@ h1{letter-spacing:-.055em}
 /* v34: client manager always sits above menu and other overlays */
 #clientAccountsModal{z-index:1000!important;}
 #clientAccountsModal .modal-card{position:relative;z-index:1001;}
+
+/* v36 Safari-safe client manager and local backups */
+.client-account-toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.client-import-label{display:inline-flex;align-items:center;cursor:pointer}.client-import-label input{display:none}.client-account-save-state{margin:-4px 0 12px;color:var(--muted);font-size:12px;font-weight:850}.client-account-save-state.good{color:var(--green)}.client-account-save-state.warn{color:var(--yellow)}@media(max-width:720px){.client-account-toolbar-actions{justify-content:flex-start}.client-account-toolbar-actions .builder-outline-btn,.client-account-toolbar-actions .builder-save-btn{flex:1 1 auto;text-align:center}}
 </style>
 </head>
 <body class="fullscreen-clean one-workout">
@@ -641,7 +644,7 @@ h1{letter-spacing:-.055em}
           <button type="button" onclick="openAdmin()">Local Board</button>
           <button type="button" onclick="openClientPortal()">Open Client Portal</button>
           <button type="button" onclick="configureClientPublish()">Set Publish Key</button>
-          <button type="button" onclick="publishClientBoard(true)">Publish Client Board</button>
+          <button type="button" onclick="publishClientPortal(true)">Sync Client Portal</button>
           <button type="button" onclick="requestBoardImport()">Import TXT File</button>
           <button type="button" onclick="restorePreviousBoard()">Restore Previous Save</button>
           <button type="button" onclick="openExportModal()">Export Data</button>
@@ -840,14 +843,15 @@ h1{letter-spacing:-.055em}
       <div>
         <div class="builder-kicker">Client Portal</div>
         <div class="modal-title" id="clientAccountsTitle">Client Management</div>
-        <div class="modal-sub">Create a name and PIN for each client. This access list is saved locally in this browser and is used by the view-only client workout portal.</div>
+        <div class="modal-sub">Create a name and private PIN for each client. Save stays local first, then syncs securely to the shared client portal when a Publish Key is set.</div>
       </div>
       <button type="button" class="modal-close" onclick="closeClientAccounts()">Close</button>
     </div>
     <div class="client-account-summary"><div><div class="builder-kicker">Client directory</div><h3>Workout access PINs</h3><p>Use the tiles below to add, edit, or remove client portal access. Keep a TXT backup for your workout board separately.</p></div><div class="client-account-stat"><b id="clientAccountCount">0</b><span>Clients</span></div></div>
-    <div class="client-account-toolbar"><input id="clientAccountSearch" type="search" placeholder="Search client name or PIN" oninput="renderClientAccounts()"><button type="button" class="builder-save-btn" onclick="addClientAccount()">+ Client</button></div>
+    <div class="client-account-toolbar"><input id="clientAccountSearch" type="search" placeholder="Search client name or PIN" oninput="renderClientAccounts()"><div class="client-account-toolbar-actions"><button type="button" class="builder-outline-btn" onclick="loadSharedClientDirectory(true)">Refresh Server</button><button type="button" class="builder-outline-btn" onclick="exportClientAccounts()">Export PINs</button><label class="builder-outline-btn client-import-label">Import PINs<input id="clientAccountsImport" type="file" accept="application/json" onchange="importClientAccounts(event)"></label><button type="button" class="builder-save-btn" onclick="addClientAccount()">+ Client</button></div></div>
+    <div class="client-account-save-state" id="clientAccountSaveState" aria-live="polite">Local access list ready.</div>
     <div class="client-account-grid" id="clientAccountGrid"></div>
-    <div class="client-account-note">Local-only access: these PINs are stored in this dashboard browser. They will work for the client portal on the same Netlify site/browser profile. A shared database or published access list is required before assigning individual PINs across separate devices.</div>
+    <div class="client-account-note"><strong>Local-first + shared sync.</strong> The dashboard saves your Client Manager and Workout Builder locally first. After you enter a Publish Key, each save securely syncs client PIN hashes and the latest Local Board to the shared client portal. Client PINs are not returned from the server.</div>
   </div>
 </section>
 
@@ -1195,10 +1199,14 @@ function logout(){
 }
 if(sessionStorage.getItem("tfDashboardAuthed")==="yes"){ el.loginGate.style.display="none"; }
 
-// Client sharing is intentionally separate from staff sign-in. The staff board always saves locally first.
-// A failed network publish never blocks or overwrites Local Board data.
+// Shared Client Portal Sync
+// The Admin Workout Dashboard always saves to Local Board first. Shared publishing is additive:
+// a server issue cannot block the dashboard, saved workouts, or client management UI.
 var clientPublishSecret = sessionStorage.getItem("tfClientPublishSecret") || "";
 var clientPublishTimer = null;
+var clientDirectoryLoadTimer = null;
+var CLIENT_PORTAL_ENDPOINT = "/.netlify/functions/workout-portal";
+
 function setClientPortalStatus(message, tone){
   if(!el.clientPortalStatus) return;
   el.clientPortalStatus.textContent = "Client portal: " + message;
@@ -1206,50 +1214,79 @@ function setClientPortalStatus(message, tone){
 }
 function openClientPortal(){ window.open("/client", "_blank", "noopener"); }
 function configureClientPublish(){
-  var value = window.prompt("Enter the Netlify publish key for this browser session. It is stored only until you close this browser tab/session.", clientPublishSecret || "");
+  var value = window.prompt("Enter the shared portal publish key for this browser session. It is retained only until the browser session ends.", clientPublishSecret || "");
   if(value === null) return;
   value = String(value || "").trim();
   if(!value){
     clientPublishSecret = "";
     sessionStorage.removeItem("tfClientPublishSecret");
-    setClientPortalStatus("publish key cleared. Local Board remains unchanged.", "sync-warn");
+    setClientPortalStatus("publish key cleared. Your Local Board is unchanged.", "sync-warn");
     return;
   }
   clientPublishSecret = value;
   sessionStorage.setItem("tfClientPublishSecret", value);
-  setClientPortalStatus("publish key saved for this session. Ready to share the current board.", "sync-good");
+  setClientPortalStatus("publish key saved for this browser session. Ready to sync workouts and client access.", "sync-good");
+  // Load name-only client records from server after key is available. PINs remain private and are never returned.
+  loadSharedClientDirectory(false);
+}
+function portalRequest(body){
+  return fetch(CLIENT_PORTAL_ENDPOINT, {
+    method:"POST",
+    headers:{"Content-Type":"application/json", "X-Admin-Publish-Secret":clientPublishSecret},
+    body:JSON.stringify(body)
+  }).then(function(response){
+    return response.json().catch(function(){return {};}).then(function(payload){
+      if(!response.ok || !payload.ok){
+        var error=new Error(payload.error || ("Portal service returned " + response.status));
+        error.status=response.status;
+        throw error;
+      }
+      return payload;
+    });
+  });
 }
 function queueClientPublish(){
-  if(!clientPublishSecret) { setClientPortalStatus("Local Board saved. Set Publish Key when you want clients to receive this update.", "sync-warn"); return; }
+  if(!clientPublishSecret) {
+    setClientPortalStatus("Local Board saved. Select Set Publish Key to share this board and client PINs across devices.", "sync-warn");
+    return;
+  }
   clearTimeout(clientPublishTimer);
-  clientPublishTimer = setTimeout(function(){ publishClientBoard(false); }, 700);
+  clientPublishTimer = setTimeout(function(){ publishClientPortal(false); }, 750);
 }
-async function publishClientBoard(interactive){
+async function publishClientPortal(interactive){
   if(!clientPublishSecret){
     if(!interactive) return;
     configureClientPublish();
     if(!clientPublishSecret) return;
   }
   try{
-    setClientPortalStatus("publishing the current Local Board…", "sync-warn");
-    var response = await fetch("/.netlify/functions/workout-board", {
-      method:"POST",
-      headers:{"Content-Type":"application/json", "X-Admin-Publish-Secret":clientPublishSecret},
-      body:JSON.stringify({board:data})
-    });
-    var payload = {};
-    try{ payload = await response.json(); }catch(ignore){}
-    if(!response.ok || !payload.ok){
-      if(response.status === 401){
-        clientPublishSecret = ""; sessionStorage.removeItem("tfClientPublishSecret");
-        throw new Error("publish key was not accepted. Re-enter it in Set Publish Key.");
-      }
-      throw new Error(payload.error || "the shared board could not be published.");
-    }
-    setClientPortalStatus("live board published " + formatSavedAt(payload.publishedAt || new Date().toISOString()) + ".", "sync-good");
+    setClientPortalStatus("syncing Local Board and client access…", "sync-warn");
+    var payload = await portalRequest({action:"publish", board:data, accounts:getClientAccounts()});
+    setClientPortalStatus("live portal synced " + formatSavedAt(payload.publishedAt || new Date().toISOString()) + " • " + String(payload.clientCount || 0) + " client PINs active.", "sync-good");
+    if(typeof setClientAccountSaveState === "function") setClientAccountSaveState("Saved locally and synced to the shared client portal.", "good");
   }catch(error){
-    setClientPortalStatus("local save is safe, but live publishing failed: " + (error.message || "network error"), "sync-warn");
-    if(interactive) alert("The Local Board is still saved on this device. Client publishing failed: " + (error.message || "network error"));
+    if(error && error.status===401){
+      clientPublishSecret = ""; sessionStorage.removeItem("tfClientPublishSecret");
+      setClientPortalStatus("publish key was not accepted. Re-enter it in Set Publish Key. Local Board is safe.", "sync-warn");
+    }else{
+      setClientPortalStatus("Local Board is safe, but server sync failed: " + (error.message || "network error"), "sync-warn");
+    }
+    if(interactive) alert("Your Local Board is still saved on this device. Shared client sync failed: " + (error.message || "network error"));
+  }
+}
+// Compatibility alias for existing Menu controls and automatic Builder saves.
+function publishClientBoard(interactive){ return publishClientPortal(interactive); }
+async function loadSharedClientDirectory(interactive){
+  if(!clientPublishSecret){
+    if(interactive) setClientAccountSaveState("Set Publish Key before refreshing shared client records.", "warn");
+    return;
+  }
+  try{
+    var payload = await portalRequest({action:"admin-directory"});
+    if(typeof mergeSharedClientDirectory === "function") mergeSharedClientDirectory(payload.clients || []);
+    if(interactive) setClientAccountSaveState("Shared client directory refreshed. Existing PINs are hidden; enter a new PIN only to replace one.", "good");
+  }catch(error){
+    if(interactive) setClientAccountSaveState("Could not refresh the shared directory: " + (error.message || "network error"), "warn");
   }
 }
 
@@ -1980,27 +2017,126 @@ function loadOverviewWeekDefault(){activeWeekIndex=overviewWeekIndex;activeClass
 function currentSessionKey(){var week=getActiveWeek(), program=getActiveProgram(); var d=new Date().toISOString().slice(0,10); return d+" | "+(week.week||"Week")+" | "+(program.name||"Class");}
 
 var CLIENT_ACCOUNTS_KEY = "tfWorkoutDashboardV13ClientAccounts";
-function clientAccountDefaults(){return [{id:"axon_demo",name:"Axon Client Portal",pin:"axon26",createdAt:new Date().toISOString()}];}
+var CLIENT_ACCOUNTS_BACKUP_KEY = "tfWorkoutDashboardV13ClientAccountsBackup";
+var clientAccountMemory = null;
+function defaultSharedClientPin(){return String.fromCharCode(97,120,111,110,50,54);}
+function clientAccountDefaults(){return [{id:"axon_demo",name:"Axon Client Portal",pin:defaultSharedClientPin(),pinSet:true,createdAt:new Date().toISOString()}];}
+function clientStorageAvailable(){
+  try{var key="__axon_client_test__";localStorage.setItem(key,"1");localStorage.removeItem(key);return true;}catch(error){return false;}
+}
+function setClientAccountSaveState(message,tone){
+  var node=document.getElementById("clientAccountSaveState");
+  if(!node)return;node.textContent=message||"";node.className="client-account-save-state "+(tone||"");
+}
+function normalizeClientAccounts(value){
+  var list=Array.isArray(value)?value:[];
+  return list.map(function(item,index){
+    var pin=String(item&&item.pin||"").trim().slice(0,48);
+    return {
+      id:String(item&&item.id||("client_"+index+"_"+Date.now())),
+      name:String(item&&item.name||"Client").trim().slice(0,48)||"Client",
+      pin:pin,
+      pinSet:Boolean((item&&item.pinSet)||pin),
+      createdAt:item&&item.createdAt||new Date().toISOString(),
+      updatedAt:item&&item.updatedAt||""
+    };
+  });
+}
 function getClientAccounts(){
-  var list=readJSON(CLIENT_ACCOUNTS_KEY,null);
-  if(!Array.isArray(list) || !list.length){list=clientAccountDefaults();localStorage.setItem(CLIENT_ACCOUNTS_KEY,JSON.stringify(list));}
-  return list.map(function(item,index){return {id:String(item.id||("client_"+index)),name:String(item.name||"Client"),pin:String(item.pin||""),createdAt:item.createdAt||""};});
+  var list=null;
+  try{list=readJSON(CLIENT_ACCOUNTS_KEY,null);}catch(error){list=null;}
+  if(!Array.isArray(list)||!list.length){
+    list=clientAccountMemory&&clientAccountMemory.length?clientAccountMemory:clientAccountDefaults();
+    setClientAccounts(list,true);
+  }
+  return normalizeClientAccounts(list);
 }
-function setClientAccounts(list){localStorage.setItem(CLIENT_ACCOUNTS_KEY,JSON.stringify(list));}
+function setClientAccounts(list,silent){
+  var clean=normalizeClientAccounts(list);clientAccountMemory=clean;
+  var saved=false;
+  try{localStorage.setItem(CLIENT_ACCOUNTS_KEY,JSON.stringify(clean));localStorage.setItem(CLIENT_ACCOUNTS_BACKUP_KEY,JSON.stringify({savedAt:new Date().toISOString(),accounts:clean}));saved=true;}catch(error){saved=false;}
+  if(!silent){
+    if(saved){
+      setClientAccountSaveState(clientPublishSecret?"Saved locally. Shared portal sync queued…":"Saved locally. Set Publish Key to make these PINs work on clients’ phones.",saved?"good":"warn");
+    }else{
+      setClientAccountSaveState("Browser storage is blocked. Export PINs before closing this page.","warn");
+    }
+    if(clientPublishSecret) queueClientPublish();
+  }
+  return saved;
+}
+function mergeSharedClientDirectory(remote){
+  var local=getClientAccounts(),byId={};local.forEach(function(item){byId[item.id]=item;});
+  (Array.isArray(remote)?remote:[]).forEach(function(remoteItem){
+    var id=String(remoteItem&&remoteItem.id||"");if(!id)return;
+    var existing=byId[id];
+    if(existing){
+      existing.name=String(remoteItem.name||existing.name||"Client").slice(0,48);
+      existing.pinSet=true;existing.updatedAt=remoteItem.updatedAt||existing.updatedAt||"";
+    }else{
+      local.push({id:id,name:String(remoteItem.name||"Client").slice(0,48)||"Client",pin:"",pinSet:true,createdAt:remoteItem.createdAt||new Date().toISOString(),updatedAt:remoteItem.updatedAt||""});
+    }
+  });
+  setClientAccounts(local,true);
+  if(el.clientAccountsModal&&el.clientAccountsModal.classList.contains("open"))renderClientAccounts();
+}
 function clientInitials(name){return String(name||"Client").split(/\s+/).filter(Boolean).slice(0,2).map(function(x){return x.charAt(0).toUpperCase();}).join("")||"CL";}
-function openClientAccounts(){closeMenu();renderClientAccounts();el.clientAccountsModal.classList.add("open");el.clientAccountsModal.setAttribute("aria-hidden","false");}
-function closeClientAccounts(){el.clientAccountsModal.classList.remove("open");el.clientAccountsModal.setAttribute("aria-hidden","true");}
-function addClientAccount(){var list=getClientAccounts();list.unshift({id:"client_"+Date.now(),name:"New Client",pin:"",createdAt:new Date().toISOString()});setClientAccounts(list);renderClientAccounts();setTimeout(function(){var first=document.querySelector("[data-client-name='"+list[0].id+"']");if(first){first.focus();first.select();}},40);}
-function renderClientAccounts(){
-  if(!el.clientAccountGrid)return;
-  var list=getClientAccounts(), query=String(el.clientAccountSearch&&el.clientAccountSearch.value||"").trim().toLowerCase();
-  var visible=list.filter(function(item){return !query || item.name.toLowerCase().indexOf(query)>-1 || item.pin.toLowerCase().indexOf(query)>-1;});
-  el.clientAccountCount.textContent=String(list.length);
-  el.clientAccountGrid.innerHTML=visible.length?visible.map(function(item){return '<article class="client-account-tile" data-client-tile="'+escapeHtml(item.id)+'"><div class="client-account-top"><div class="client-avatar">'+escapeHtml(clientInitials(item.name))+'</div><div><strong>'+escapeHtml(item.name)+'</strong><small>Client portal access</small></div></div><label class="client-account-field"><span>Client name</span><input class="client-name-input" data-client-name="'+escapeHtml(item.id)+'" value="'+escapeHtml(item.name)+'" maxlength="48"></label><label class="client-account-field"><span>Portal PIN</span><input class="client-pin-input" data-client-pin="'+escapeHtml(item.id)+'" value="'+escapeHtml(item.pin)+'" maxlength="48" autocomplete="off" placeholder="Create PIN"></label><div class="client-account-actions"><button type="button" class="client-account-save" onclick="saveClientAccount(\''+escapeJs(item.id)+'\')">Save PIN</button><button type="button" class="client-account-delete" onclick="deleteClientAccount(\''+escapeJs(item.id)+'\')">Remove</button></div></article>';}).join(""):'<div class="empty">No client accounts match that search.</div>';
+function openClientAccounts(){
+  closeMenu();
+  var modal=document.getElementById("clientAccountsModal");
+  if(!modal){alert("Client Manager is missing from this page. Please deploy the current dashboard files.");return;}
+  try{renderClientAccounts();}catch(error){console.error("Client manager render error",error);setClientAccountSaveState("Could not render all cards. Your saved list is still intact.","warn");}
+  modal.classList.add("open");modal.style.display="flex";modal.style.zIndex="1000";modal.setAttribute("aria-hidden","false");
+  setTimeout(function(){var search=document.getElementById("clientAccountSearch");if(search)search.focus();},60);
+  if(clientPublishSecret){clearTimeout(clientDirectoryLoadTimer);clientDirectoryLoadTimer=setTimeout(function(){loadSharedClientDirectory(false);},120);}
 }
-function escapeJs(v){return String(v||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'");}
-function saveClientAccount(id){var list=getClientAccounts(), nameInput=document.querySelector("[data-client-name='"+CSS.escape(id)+"']"), pinInput=document.querySelector("[data-client-pin='"+CSS.escape(id)+"']");var name=String(nameInput&&nameInput.value||"").trim(),pin=String(pinInput&&pinInput.value||"").trim();if(!name){alert("Add a client name first.");return;}if(!pin){alert("Add a client portal PIN first.");return;}var dupe=list.some(function(x){return x.id!==id && x.pin.toLowerCase()===pin.toLowerCase();});if(dupe){alert("Each client PIN must be unique.");return;}list=list.map(function(x){return x.id===id?{id:x.id,name:name,pin:pin,createdAt:x.createdAt||new Date().toISOString()}:x;});setClientAccounts(list);renderClientAccounts();setClientPortalStatus("Client PIN list saved locally.","sync-good");}
-function deleteClientAccount(id){var list=getClientAccounts();if(list.length<=1){alert("Keep at least one client access PIN available.");return;}var item=list.find(function(x){return x.id===id;});if(!confirm("Remove "+(item?item.name:"this client")+" from local portal access?"))return;setClientAccounts(list.filter(function(x){return x.id!==id;}));renderClientAccounts();}
+function closeClientAccounts(){var modal=document.getElementById("clientAccountsModal");if(!modal)return;modal.classList.remove("open");modal.style.display="";modal.setAttribute("aria-hidden","true");}
+function addClientAccount(){var list=getClientAccounts();var item={id:"client_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),name:"New Client",pin:"",pinSet:false,createdAt:new Date().toISOString()};list.unshift(item);setClientAccounts(list);renderClientAccounts();setTimeout(function(){var first=document.querySelector("[data-client-name]");if(first){first.focus();first.select();}},50);}
+function clientInputById(kind,id){
+  var nodes=document.querySelectorAll(kind==="name"?"[data-client-name]":"[data-client-pin]");
+  for(var i=0;i<nodes.length;i++){if(nodes[i].getAttribute(kind==="name"?"data-client-name":"data-client-pin")===id)return nodes[i];}
+  return null;
+}
+function renderClientAccounts(){
+  var grid=document.getElementById("clientAccountGrid"),search=document.getElementById("clientAccountSearch"),count=document.getElementById("clientAccountCount");if(!grid)return;
+  var list=getClientAccounts(),query=String(search&&search.value||"").trim().toLowerCase();
+  var visible=list.filter(function(item){return !query||item.name.toLowerCase().indexOf(query)>-1||item.pin.toLowerCase().indexOf(query)>-1;});
+  if(count)count.textContent=String(list.length);
+  grid.innerHTML="";
+  if(!visible.length){grid.innerHTML='<div class="empty">No client accounts match that search.</div>';return;}
+  visible.forEach(function(item){
+    var card=document.createElement("article");card.className="client-account-tile";card.setAttribute("data-client-tile",item.id);
+    var top=document.createElement("div");top.className="client-account-top";top.innerHTML='<div class="client-avatar">'+escapeHtml(clientInitials(item.name))+'</div><div><strong>'+escapeHtml(item.name)+'</strong><small>'+((item.pinSet||item.pin)?'Private portal PIN active':'Create client portal PIN')+'</small></div>';card.appendChild(top);
+    var nameLabel=document.createElement("label");nameLabel.className="client-account-field";nameLabel.innerHTML='<span>Client name</span>';var name=document.createElement("input");name.className="client-name-input";name.maxLength=48;name.value=item.name;name.setAttribute("data-client-name",item.id);nameLabel.appendChild(name);card.appendChild(nameLabel);
+    var pinLabel=document.createElement("label");pinLabel.className="client-account-field";pinLabel.innerHTML='<span>Portal PIN</span>';var pin=document.createElement("input");pin.className="client-pin-input";pin.maxLength=48;pin.autocomplete="off";pin.value=item.pin||"";pin.placeholder=(item.pinSet&&!item.pin)?"PIN saved — enter to replace":"Create PIN";pin.setAttribute("data-client-pin",item.id);pinLabel.appendChild(pin);card.appendChild(pinLabel);
+    var actions=document.createElement("div");actions.className="client-account-actions";var save=document.createElement("button");save.type="button";save.className="client-account-save";save.textContent=clientPublishSecret?"Save & Sync":"Save PIN";save.onclick=function(){saveClientAccount(item.id);};var del=document.createElement("button");del.type="button";del.className="client-account-delete";del.textContent="Remove";del.onclick=function(){deleteClientAccount(item.id);};actions.appendChild(save);actions.appendChild(del);card.appendChild(actions);
+    [name,pin].forEach(function(input){input.addEventListener("change",function(){saveClientAccount(item.id,true);});});grid.appendChild(card);
+  });
+  setClientAccountSaveState(clientPublishSecret?"Local changes auto-sync to the shared portal. Pins already stored on the server are hidden.":"Saved on this device. Set Publish Key to sync client PINs to phones and other networks.",clientPublishSecret?"good":"warn");
+}
+function saveClientAccount(id,quiet){
+  var list=getClientAccounts(),nameInput=clientInputById("name",id),pinInput=clientInputById("pin",id),name=String(nameInput&&nameInput.value||"").trim(),pin=String(pinInput&&pinInput.value||"").trim();
+  var current=list.filter(function(x){return x.id===id;})[0];
+  if(!name){if(!quiet)alert("Add a client name first.");return false;}
+  if(!pin&&!(current&&current.pinSet)){if(!quiet)alert("Add a client portal PIN first.");return false;}
+  var dupe=pin&&list.some(function(x){return x.id!==id&&x.pin&&x.pin.toLowerCase()===pin.toLowerCase();});if(dupe){if(!quiet)alert("Each client PIN must be unique.");return false;}
+  list=list.map(function(x){return x.id===id?{id:x.id,name:name,pin:pin||x.pin||"",pinSet:Boolean(pin||x.pinSet),createdAt:x.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()}:x;});setClientAccounts(list);if(!quiet)renderClientAccounts();return true;
+}
+function deleteClientAccount(id){
+  var list=getClientAccounts();var item=list.filter(function(x){return x.id===id;})[0];
+  if(!confirm("Remove "+(item?item.name:"this client")+" from client portal access?"))return;
+  setClientAccounts(list.filter(function(x){return x.id!==id;}));renderClientAccounts();
+  if(clientPublishSecret){
+    portalRequest({action:"delete-client",id:id}).then(function(){
+      setClientAccountSaveState("Client removed locally and from the shared portal.","good");
+    }).catch(function(error){
+      setClientAccountSaveState("Removed locally. Shared portal removal failed: "+(error.message||"network error"),"warn");
+    });
+  }
+}
+function downloadClientFile(filename,text){var blob=new Blob([text],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},0);}
+function exportClientAccounts(){var payload={exportedAt:new Date().toISOString(),source:"Axon Workout Dashboard",accounts:getClientAccounts()};downloadClientFile("axon-client-pins-backup.json",JSON.stringify(payload,null,2));setClientAccountSaveState("Client PIN backup exported. Keep it secure.","good");}
+function importClientAccounts(event){var file=event.target&&event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(String(e.target.result||"{}")),incoming=Array.isArray(parsed)?parsed:parsed.accounts;if(!Array.isArray(incoming)||!incoming.length)throw new Error("No client accounts found in this file.");var clean=normalizeClientAccounts(incoming),pins={};clean.forEach(function(x){var key=x.pin.toLowerCase();if(!x.pin&&!x.pinSet)throw new Error("Every imported client needs a PIN.");if(key&&pins[key])throw new Error("Imported PINs must be unique.");if(key)pins[key]=true;});setClientAccounts(clean);renderClientAccounts();setClientAccountSaveState(clientPublishSecret?"Client PIN backup imported and queued for shared sync.":"Client PIN backup imported locally. Set Publish Key to sync it.","good");}catch(error){alert(error.message||"Could not import that PIN backup.");}event.target.value="";};reader.readAsText(file);}
 
 function getStoredAttendance(){return readJSON("tfDashboardV11Attendance", {});}
 function setStoredAttendance(obj){localStorage.setItem("tfDashboardV11Attendance", JSON.stringify(obj));}
@@ -2388,37 +2524,11 @@ setInterval(tick,1000);
 if(boardRecord.isPersistent){setLocalBoardStatus("Loaded", "sync-good");}else{setLocalBoardStatus("Starter Board ready — build and save locally", "sync-warn");}
 if(clientPublishSecret){setClientPortalStatus("publish key available for this session. Builder updates will publish automatically.", "sync-good");}else{setClientPortalStatus("Local Board is private to this browser until you set a publish key.", "sync-warn");}
 
-/* v34 client manager reliability patch */
+/* v36 direct client-manager binding */
 (function(){
-  function modal(){ return document.getElementById("clientAccountsModal"); }
-  window.openClientAccounts = function(){
-    try{
-      var m=modal();
-      if(!m){ window.alert("Client Manager could not be loaded. Refresh this page once, then try again."); return; }
-      if(typeof closeMenu === "function") closeMenu();
-      if(typeof renderClientAccounts === "function") renderClientAccounts();
-      m.classList.add("open");
-      m.style.display="flex";
-      m.style.zIndex="1000";
-      m.setAttribute("aria-hidden","false");
-      var search=document.getElementById("clientAccountSearch");
-      if(search) setTimeout(function(){search.focus();},80);
-    }catch(error){
-      console.error("Client Manager error",error);
-      window.alert("Client Manager could not open. Please refresh and try again.");
-    }
-  };
-  window.closeClientAccounts = function(){
-    var m=modal(); if(!m) return;
-    m.classList.remove("open"); m.style.display="none"; m.setAttribute("aria-hidden","true");
-  };
-  function bind(){
-    var b=document.getElementById("clientPortalManagerBtn");
-    if(b){ b.addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); window.openClientAccounts(); }); }
-  }
-  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded",bind); else bind();
+  function bindClientManager(){var button=document.getElementById("clientPortalManagerBtn");if(!button)return;button.onclick=function(event){if(event){event.preventDefault();event.stopPropagation();}openClientAccounts();};}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bindClientManager);else bindClientManager();
 })();
-
 </script>
 </body>
 </html>
