@@ -1,4 +1,4 @@
-# Axon Workout Dashboard v38 — public npm lock repair
+# Axon Performance Workout Dashboard v38 — public npm lock repair
 
 This release is a targeted repair for Netlify dependency-install failures caused by package-lock URLs pointing at a private OpenAI registry.
 
@@ -26,3 +26,10 @@ Do not add `BLOBS_SITE_ID`, `BLOBS_ACCESS_TOKEN`, or `NPM_CONFIG_REGISTRY`.
 ## Verify
 
 A successful deploy must show package installation from `registry.npmjs.org`, then function packaging for `workout-portal.js`.
+
+
+## v39 Axon Performance brand refresh
+- Rebranded visible labels from Tifton Fitness to Axon Performance.
+- Updated dashboard and client portal colors to the Axon blue system (#63D3FD / #8DE4FF) with dark glass panels.
+- Added subtle grid/orb motion, hover transitions, refined button states, and mobile client portal spacing.
+- Existing Local Board storage keys and client sync behavior are unchanged.
