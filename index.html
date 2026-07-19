@@ -804,6 +804,34 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
   font-size:clamp(10px,.88vw,15px)!important;
 }
 
+
+/* v42 station typography and branding cleanup */
+.exercise{
+  font-family:"Montserrat",Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  justify-content:center!important;
+  text-align:center!important;
+  width:100%!important;
+  max-width:92%!important;
+  margin-inline:auto!important;
+  letter-spacing:.01em!important;
+  line-height:1.02!important;
+  text-wrap:balance;
+  word-break:normal!important;
+}
+.station-label{
+  font-family:"Montserrat",Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  letter-spacing:.16em!important;
+}
+.station-badge{
+  font-family:"Montserrat",Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  letter-spacing:-.015em!important;
+}
+.multi-view .exercise{
+  letter-spacing:0!important;
+  line-height:1.04!important;
+  max-width:100%!important;
+}
+
 </style>
 </head>
 <body class="fullscreen-clean one-workout">
@@ -2394,7 +2422,7 @@ function flattenReviews(){return getStoredReviews();}
 function rawBackup(){return {exportedAt:new Date().toISOString(),sourceApp:"workout_dashboard",version:"v14",board:boardRecord,boardHistory:getBoardHistory(),attendance:getStoredAttendance(),reviews:getStoredReviews(),settings:readJSON(SETTINGS_KEY,{}),activeWorkout:{week:getActiveWeek().week,className:getActiveProgram().name,circuit:getActiveCircuit().name}};}
 function txtReport(type){
   var attendance=flattenAttendance(), reviews=flattenReviews();
-  var lines=["TIFTON FITNESS WORKOUT DASHBOARD EXPORT","Exported: "+new Date().toLocaleString(),"Type: "+type,""];
+  var lines=["AXON PERFORMANCE WORKOUT DASHBOARD EXPORT","Exported: "+new Date().toLocaleString(),"Type: "+type,""];
   lines.push("SUMMARY"); lines.push("Attendance Records: "+attendance.length); lines.push("Review Records: "+reviews.length); lines.push("");
   lines.push("ATTENDANCE"); attendance.forEach(function(r,i){lines.push((i+1)+". "+r.session);lines.push("   Timestamp: "+r.timestamp);lines.push("   Attendance: "+r.attendance);lines.push("   Client Notes: "+r.clientNotes);lines.push("   Admin Notes: "+r.adminNotes);});
   lines.push(""); lines.push("REVIEWS"); reviews.forEach(function(r,i){lines.push((i+1)+". "+r.week+" | "+r.className+" | "+r.circuit);lines.push("   Timestamp: "+r.timestamp);lines.push("   Client: "+r.client);lines.push("   Intensity: "+r.intensity+"/5 | Pacing: "+r.pacing+"/5 | Support: "+r.support+"/5");lines.push("   Notes: "+r.notes);});

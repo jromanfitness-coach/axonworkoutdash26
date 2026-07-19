@@ -20,3 +20,8 @@ Keep the same Netlify environment variables already used by the shared client-sy
 - Removed duplicated bottom-left reps/work text from workout tiles.
 - Enlarged and emphasized the top-right work/rep badge.
 - Kept coach notes visible on the lower-right of each tile.
+
+## v42 Font & Spacing Refinement
+- Preserved the v40-v41 Axon aesthetic while keeping the Montserrat-based font treatment.
+- Centered and respaced the main exercise text in station tiles for easier reading.
+- Removed the remaining visible Tifton Fitness export label and replaced it with Axon Performance.
