@@ -25,3 +25,9 @@ Keep the same Netlify environment variables already used by the shared client-sy
 - Preserved the v40-v41 Axon aesthetic while keeping the Montserrat-based font treatment.
 - Centered and respaced the main exercise text in station tiles for easier reading.
 - Removed the remaining visible Tifton Fitness export label and replaced it with Axon Performance.
+
+## v43 Tile Text + Menu Fix
+- Main exercise text in station tiles is now bold and left-aligned.
+- Removed the centered exercise-title treatment from v42.
+- Menu dropdown is forced above the dashboard/workout tiles and no longer clips underneath the topbar.
+- Mobile menu uses a fixed overlay position for better Safari behavior.
