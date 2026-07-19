@@ -1,35 +1,22 @@
-# Axon Performance Workout Dashboard v38 — public npm lock repair
+# Axon Workout Dashboard — v41 Axon Tile Refinement
 
-This release is a targeted repair for Netlify dependency-install failures caused by package-lock URLs pointing at a private OpenAI registry.
+This release keeps the current workout dashboard and client-portal structure intact while upgrading the visual system to the new Axon Performance design language.
 
-## What changed
-
-- `package-lock.json` now resolves every dependency from `https://registry.npmjs.org/`.
-- `.npmrc` explicitly selects the public npm registry.
-- The workout dashboard, Local Board keys, client portal, and Function source are otherwise unchanged from v37.
+## Highlights
+- Premium Axon Performance dark navy / electric-blue visual system
+- Montserrat typography and improved text hierarchy
+- Layered glass panels, technical grid textures, diagonal light flares, and low-opacity insignia-style depth elements
+- Upgraded hover states, panel glow, motion polish, and smoother button emphasis
+- Admin dashboard and client portal both refreshed to the new Axon aesthetic
+- Existing workout-builder / local-board / client-sync behavior preserved
 
 ## Deploy
+Upload the contents of this package to the GitHub repository root for your Netlify site.
 
-1. Replace the contents of your GitHub repository `main` branch with the files in this folder.
-2. In Netlify, set the Build command to `npm run build` or leave the existing harmless build command unchanged.
-3. Trigger **Clear cache and deploy site**.
+## Netlify
+Keep the same Netlify environment variables already used by the shared client-sync version.
 
-## Netlify variables
-
-Keep only the values required by your existing shared portal configuration:
-
-- `ADMIN_PUBLISH_SECRET`
-- `AUTH_SESSION_SECRET` (recommended)
-
-Do not add `BLOBS_SITE_ID`, `BLOBS_ACCESS_TOKEN`, or `NPM_CONFIG_REGISTRY`.
-
-## Verify
-
-A successful deploy must show package installation from `registry.npmjs.org`, then function packaging for `workout-portal.js`.
-
-
-## v39 Axon Performance brand refresh
-- Rebranded visible labels from Tifton Fitness to Axon Performance.
-- Updated dashboard and client portal colors to the Axon blue system (#63D3FD / #8DE4FF) with dark glass panels.
-- Added subtle grid/orb motion, hover transitions, refined button states, and mobile client portal spacing.
-- Existing Local Board storage keys and client sync behavior are unchanged.
+## v41 Tile Refinement
+- Removed duplicated bottom-left reps/work text from workout tiles.
+- Enlarged and emphasized the top-right work/rep badge.
+- Kept coach notes visible on the lower-right of each tile.
