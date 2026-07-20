@@ -1,13 +1,9 @@
 {
   "name": "axon-workout-dashboard",
-  "version": "48.0.0",
+  "version": "50.0.0",
   "private": true,
-  "description": "Axon Workout Dashboard with shared client portal sync",
   "scripts": {
-    "build": "node -e \"console.log('Axon v48 hard local board fix ready.')\"",
-    "check": "node --check netlify/functions/workout-portal.js"
+    "build": "node -e \"console.log('Axon v50 clean builder rebuild ready')\""
   },
-  "dependencies": {
-    "@netlify/blobs": "10.7.9"
-  }
+  "dependencies": {}
 }
