@@ -8,23 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <title>Axon Performance Workout Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
-/* v45 core button fallback wiring */
+/* v46 safe button aliases */
 (function(){
-  function buttonText(node){ return (node && node.textContent || "").replace(/\s+/g," ").trim().toLowerCase(); }
-  document.addEventListener("click", function(event){
-    var btn = event.target && event.target.closest ? event.target.closest("button.quick-btn") : null;
-    if(!btn) return;
-    var text = buttonText(btn);
-    try{
-      if(text.indexOf("local board") >= 0){ event.preventDefault(); event.stopPropagation(); openAdmin(); return; }
-      if(text.indexOf("clients") >= 0 || text.indexOf("manage clients") >= 0){ event.preventDefault(); event.stopPropagation(); openClientAccounts(); return; }
-      if(text.indexOf("weekly") >= 0){ event.preventDefault(); event.stopPropagation(); openWeeklyView(); return; }
-      if(text.indexOf("calendar") >= 0){ event.preventDefault(); event.stopPropagation(); openCalendarView(); return; }
-    }catch(error){
-      console.error("Quick action failed", error);
-      alert("That dashboard action could not open. Refresh and try again.");
-    }
-  }, true);
+  window.axonActionStatus = function(message){ try{ console.log("[Axon]", message); }catch(e){} };
+  if(typeof window.openCalendarView !== "function" && typeof openCalendar === "function") window.openCalendarView = openCalendar;
+  if(typeof window.openWeeklyView !== "function" && typeof openWeekly === "function") window.openWeeklyView = openWeekly;
 })();
 
 </script>
@@ -1026,139 +1014,75 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
 }
 
 
-/* v45 functionality-first layout hardening */
-.screen{
-  gap:8px!important;
-  padding:clamp(12px,1.25vw,20px)!important;
-}
-.topbar{
-  padding:clamp(12px,1.15vw,18px) clamp(16px,1.6vw,24px)!important;
-  min-height:auto!important;
-}
-.quick-actions{
-  max-width:min(920px,96vw)!important;
-  gap:7px!important;
-  padding:6px 10px!important;
-  margin-top:-2px!important;
-  border:1px solid rgba(99,211,253,.10)!important;
-  border-radius:22px!important;
-  background:rgba(5,7,10,.38)!important;
-  backdrop-filter:blur(14px)!important;
-  -webkit-backdrop-filter:blur(14px)!important;
-}
-.quick-btn{
-  min-width:58px!important;
-  padding:6px 8px!important;
-  border-radius:15px!important;
-}
-.quick-icon{
-  width:26px!important;
-  height:26px!important;
-  font-size:14px!important;
-}
-.quick-label{
-  font-size:7px!important;
-  letter-spacing:.11em!important;
-}
-.content{
-  gap:12px!important;
-}
-.main{
-  gap:10px!important;
-}
-.program-bar{
-  min-height:86px!important;
-  gap:10px!important;
-  grid-template-columns:minmax(0,1fr) minmax(150px,auto) minmax(240px,32vw)!important;
-}
-.program-panel,.stat-panel{
-  padding:clamp(12px,1.25vw,18px)!important;
-}
-.program-title{
-  font-size:clamp(28px,3.8vw,72px)!important;
-}
-.stat-value{
-  font-size:clamp(28px,4.1vw,80px)!important;
-}
-.station-grid{
-  gap:10px!important;
+/* v46 functionality restore: normal tile sizing + reliable overlays */
+.exercise{
+  font-size:clamp(34px,4.65vw,86px)!important;
 }
 .station-card{
-  min-height:clamp(174px,18.4vh,260px)!important;
-  padding:clamp(20px,2.15vw,38px) clamp(25px,2.9vw,52px)!important;
+  min-height:clamp(160px,17vh,250px)!important;
 }
-.exercise{
-  font-size:clamp(46px,5.55vw,112px)!important;
+.station-badge{
+  font-size:clamp(30px,3.65vw,72px)!important;
+  min-width:clamp(116px,10.5vw,210px)!important;
+  min-height:clamp(66px,6.4vw,108px)!important;
+}
+.multi-view .exercise{
+  font-size:clamp(16px,1.45vw,27px)!important;
+}
+.multi-view .station-badge{
+  font-size:clamp(14px,1.25vw,24px)!important;
+  min-height:34px!important;
+}
+.topbar{
+  overflow:visible!important;
+  z-index:9000!important;
+}
+.menu-wrap{
+  z-index:12000!important;
+}
+.menu{
+  z-index:14000!important;
+  max-height:calc(100vh - 140px)!important;
+  overflow:auto!important;
 }
 .admin{
   z-index:50000!important;
-  width:min(88vw,1500px)!important;
-  min-width:min(900px,calc(100vw - 28px))!important;
-  top:14px!important;
-  bottom:14px!important;
+  width:min(88vw,1480px)!important;
+  min-width:min(860px,calc(100vw - 28px))!important;
   overflow:hidden!important;
-  grid-template-rows:auto auto minmax(0,1fr) auto!important;
 }
-.admin-head,.admin-foot,.editor-tabs{
-  position:relative!important;
-  z-index:2!important;
-  flex-shrink:0!important;
-}
-#builderEditor,#textEditorWrap{
-  position:relative!important;
-  z-index:2!important;
+#builderEditor,#textEditorWrap,.builder-editor{
   min-height:0!important;
   overflow:auto!important;
   overscroll-behavior:contain!important;
-  padding-right:4px!important;
 }
-.builder-editor{
-  height:auto!important;
-}
-.builder-workout-actions,.builder-footer-actions,.admin-foot-actions,.text-editor-actions{
-  gap:9px!important;
-}
-.builder-inline-btn,.builder-outline-btn,.builder-save-btn,.builder-danger,.builder-add-btn,.menu-toggle{
-  min-height:40px!important;
-  touch-action:manipulation!important;
-}
-.builder-bottom-row,.admin-foot{
-  gap:10px!important;
-}
-.menu{
-  z-index:60000!important;
+.admin-head,.admin-foot,.editor-tabs{
+  flex-shrink:0!important;
 }
 .modal-overlay,.weekly-overlay,.calendar-overlay,.client-account-overlay,.review-overlay,.export-overlay{
   z-index:45000!important;
 }
+.quick-btn,.menu button,.menu label,.builder-inline-btn,.builder-save-btn,.builder-add-btn,.modal-btn,.overview-btn{
+  touch-action:manipulation!important;
+  pointer-events:auto!important;
+}
 @media(max-width:1050px){
-  .program-bar{
-    grid-template-columns:1fr 1fr!important;
-  }
-  .program-panel{
-    grid-column:1/-1!important;
-  }
   .admin{
     width:calc(100vw - 22px)!important;
     min-width:0!important;
-    top:11px!important;
-    bottom:11px!important;
   }
 }
 @media(max-width:720px){
-  .quick-actions{
-    justify-content:flex-start!important;
-    overflow-x:auto!important;
-    flex-wrap:nowrap!important;
-  }
-  .quick-btn{
-    flex:0 0 auto!important;
-  }
-  .station-card{
-    min-height:176px!important;
-  }
   .exercise{
-    font-size:clamp(34px,9vw,64px)!important;
+    font-size:clamp(30px,8vw,58px)!important;
+  }
+  .menu{
+    position:fixed!important;
+    left:12px!important;
+    right:12px!important;
+    top:92px!important;
+    width:auto!important;
+    max-height:calc(100vh - 112px)!important;
   }
 }
 
@@ -3005,10 +2929,10 @@ function refreshElementCache(){
 function openAdmin(){
   try{
     refreshElementCache();
-    if(!el.admin) throw new Error("Local Board panel is missing from the page.");
-    if(!el.editor) throw new Error("TXT editor is missing from the Local Board.");
+    if(!el.admin){ throw new Error("Local Board panel missing."); }
+    if(!el.editor){ throw new Error("TXT editor missing."); }
     builderDraft = cloneBuilderValue(data && data.weeks ? data : parseBoardText(boardText || SAMPLE_TEXT));
-    builderWeekIndex = Math.max(0, Math.min(activeWeekIndex || 0, (builderDraft.weeks || []).length - 1));
+    builderWeekIndex = Math.max(0, Math.min(activeWeekIndex || 0, Math.max(0,(builderDraft.weeks || []).length - 1)));
     builderProgramIndex = Math.max(0, activeClassIndex || 0);
     builderDirty = false;
     builderDrag = null;
@@ -3016,10 +2940,10 @@ function openAdmin(){
     if(el.editorStatus){ el.editorStatus.textContent = ""; el.editorStatus.className = "status"; }
     el.admin.classList.add("open");
     setEditorMode(editorMode === "txt" ? "txt" : "builder");
-    requestAnimationFrame(function(){ try{ el.admin.scrollTop = 0; }catch(e){} });
+    setTimeout(function(){ try{ if(el.admin) el.admin.scrollTop = 0; }catch(e){} }, 0);
   }catch(err){
-    console.error("Local Board open failed", err);
-    alert("Local Board could not open. Refresh once and try again. Detail: " + (err.message || err));
+    console.error("Local Board failed to open:", err);
+    alert("Local Board could not open. Refresh and try again. Detail: " + (err.message || err));
   }
 }
 function closeAdmin(){el.admin.classList.remove("open");builderDrag=null;}

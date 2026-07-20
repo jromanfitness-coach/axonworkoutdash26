@@ -24,7 +24,7 @@ Keep the same Netlify environment variables already used by the shared client-sy
 ## v42 Font & Spacing Refinement
 - Preserved the v40-v41 Axon aesthetic while keeping the Montserrat-based font treatment.
 - Centered and respaced the main exercise text in station tiles for easier reading.
-- Removed the remaining visible legacy export label and replaced it with Axon Performance.
+- Removed the remaining visible Tifton Fitness export label and replaced it with Axon Performance.
 
 ## v43 Tile Text + Menu Fix
 - Main exercise text in station tiles is now bold and left-aligned.
@@ -37,11 +37,10 @@ Keep the same Netlify environment variables already used by the shared client-sy
 - Removed lower tile note/prescription row from display tiles to prevent text sinking.
 - Preserved compact multi-view readability.
 
-## v45 Reliability Pass
-- Hardened Local Board opener so it cannot silently fail.
-- Added safe local/session/memory save fallback.
-- Added direct click fallback wiring for Local Board, Clients, Weekly, and Calendar buttons.
-- Raised Local Board and Menu stacking layers above all workout tiles.
-- Made the Local Board panel scroll correctly instead of clipping content.
-- Condensed top chrome and quick actions to give station tiles more room.
-- Enlarged station exercise text while preserving the Axon visual system.
+## v46 Functionality Restore
+- Started from v44 stable visual package, not v45.
+- Undid the larger v45 station tile text sizing.
+- Hardened Local Board opener and editor mode without capture-event button hacks.
+- Added safe local/session/memory storage fallback.
+- Raised Menu and Local Board overlay z-index without changing core button behavior.
+- Preserved existing Local Board storage keys so restored workouts remain available.
