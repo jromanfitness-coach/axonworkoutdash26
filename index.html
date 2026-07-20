@@ -7,7 +7,27 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <title>Axon Performance Workout Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
+/* v45 core button fallback wiring */
+(function(){
+  function buttonText(node){ return (node && node.textContent || "").replace(/\s+/g," ").trim().toLowerCase(); }
+  document.addEventListener("click", function(event){
+    var btn = event.target && event.target.closest ? event.target.closest("button.quick-btn") : null;
+    if(!btn) return;
+    var text = buttonText(btn);
+    try{
+      if(text.indexOf("local board") >= 0){ event.preventDefault(); event.stopPropagation(); openAdmin(); return; }
+      if(text.indexOf("clients") >= 0 || text.indexOf("manage clients") >= 0){ event.preventDefault(); event.stopPropagation(); openClientAccounts(); return; }
+      if(text.indexOf("weekly") >= 0){ event.preventDefault(); event.stopPropagation(); openWeeklyView(); return; }
+      if(text.indexOf("calendar") >= 0){ event.preventDefault(); event.stopPropagation(); openCalendarView(); return; }
+    }catch(error){
+      console.error("Quick action failed", error);
+      alert("That dashboard action could not open. Refresh and try again.");
+    }
+  }, true);
+})();
+
+</script>
 <style>
   :root{
     --bg:#05070a; --tile:#101a26; --panel:#0d121a; --blue:#1f8cff; --blue2:#64b4ff;
@@ -897,6 +917,251 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
   }
 }
 
+
+/* v44 station tile reference layout */
+.station-card{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-rows:auto 1fr!important;
+  align-items:center!important;
+  gap:clamp(6px,.8vw,14px) clamp(18px,2.2vw,42px)!important;
+  padding:clamp(18px,2vw,34px) clamp(24px,2.8vw,48px)!important;
+  min-height:clamp(160px,17vh,250px)!important;
+}
+.station-head{
+  display:contents!important;
+}
+.station-label{
+  grid-column:1!important;
+  grid-row:1!important;
+  align-self:start!important;
+  justify-self:start!important;
+  font-size:clamp(18px,1.75vw,36px)!important;
+  line-height:1!important;
+  letter-spacing:.13em!important;
+  margin:0!important;
+}
+.station-badge{
+  grid-column:2!important;
+  grid-row:1 / span 2!important;
+  align-self:center!important;
+  justify-self:end!important;
+  font-size:clamp(36px,4.1vw,82px)!important;
+  min-width:clamp(128px,12vw,230px)!important;
+  min-height:clamp(74px,7.2vw,118px)!important;
+  padding:clamp(12px,1.25vw,22px) clamp(22px,2vw,38px)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:.9!important;
+  margin:0!important;
+}
+.exercise{
+  grid-column:1!important;
+  grid-row:2!important;
+  align-self:center!important;
+  justify-self:start!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:left!important;
+  font-size:clamp(42px,5.2vw,104px)!important;
+  line-height:.9!important;
+  letter-spacing:-.035em!important;
+  font-weight:950!important;
+  transform:translateY(-.02em);
+}
+.note-row{
+  display:none!important;
+}
+.station-card:after{
+  right:-86px!important;
+  bottom:-105px!important;
+  width:240px!important;
+  height:240px!important;
+}
+
+/* compact / multi-circuit view keeps the same hierarchy without crowding */
+.multi-view .station-card{
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-rows:auto 1fr!important;
+  min-height:132px!important;
+  padding:12px 14px!important;
+  gap:5px 10px!important;
+}
+.multi-view .station-label{
+  font-size:clamp(10px,.9vw,16px)!important;
+  letter-spacing:.11em!important;
+}
+.multi-view .station-badge{
+  font-size:clamp(15px,1.35vw,26px)!important;
+  min-width:auto!important;
+  min-height:36px!important;
+  padding:6px 10px!important;
+}
+.multi-view .exercise{
+  font-size:clamp(17px,1.7vw,31px)!important;
+  line-height:.96!important;
+  letter-spacing:-.02em!important;
+  align-self:center!important;
+}
+@media(max-width:900px){
+  .station-card{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    min-height:190px!important;
+    padding:22px!important;
+  }
+  .exercise{
+    font-size:clamp(34px,9vw,68px)!important;
+  }
+  .station-badge{
+    font-size:clamp(28px,7vw,52px)!important;
+    min-width:96px!important;
+    min-height:64px!important;
+  }
+}
+
+
+/* v45 functionality-first layout hardening */
+.screen{
+  gap:8px!important;
+  padding:clamp(12px,1.25vw,20px)!important;
+}
+.topbar{
+  padding:clamp(12px,1.15vw,18px) clamp(16px,1.6vw,24px)!important;
+  min-height:auto!important;
+}
+.quick-actions{
+  max-width:min(920px,96vw)!important;
+  gap:7px!important;
+  padding:6px 10px!important;
+  margin-top:-2px!important;
+  border:1px solid rgba(99,211,253,.10)!important;
+  border-radius:22px!important;
+  background:rgba(5,7,10,.38)!important;
+  backdrop-filter:blur(14px)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+}
+.quick-btn{
+  min-width:58px!important;
+  padding:6px 8px!important;
+  border-radius:15px!important;
+}
+.quick-icon{
+  width:26px!important;
+  height:26px!important;
+  font-size:14px!important;
+}
+.quick-label{
+  font-size:7px!important;
+  letter-spacing:.11em!important;
+}
+.content{
+  gap:12px!important;
+}
+.main{
+  gap:10px!important;
+}
+.program-bar{
+  min-height:86px!important;
+  gap:10px!important;
+  grid-template-columns:minmax(0,1fr) minmax(150px,auto) minmax(240px,32vw)!important;
+}
+.program-panel,.stat-panel{
+  padding:clamp(12px,1.25vw,18px)!important;
+}
+.program-title{
+  font-size:clamp(28px,3.8vw,72px)!important;
+}
+.stat-value{
+  font-size:clamp(28px,4.1vw,80px)!important;
+}
+.station-grid{
+  gap:10px!important;
+}
+.station-card{
+  min-height:clamp(174px,18.4vh,260px)!important;
+  padding:clamp(20px,2.15vw,38px) clamp(25px,2.9vw,52px)!important;
+}
+.exercise{
+  font-size:clamp(46px,5.55vw,112px)!important;
+}
+.admin{
+  z-index:50000!important;
+  width:min(88vw,1500px)!important;
+  min-width:min(900px,calc(100vw - 28px))!important;
+  top:14px!important;
+  bottom:14px!important;
+  overflow:hidden!important;
+  grid-template-rows:auto auto minmax(0,1fr) auto!important;
+}
+.admin-head,.admin-foot,.editor-tabs{
+  position:relative!important;
+  z-index:2!important;
+  flex-shrink:0!important;
+}
+#builderEditor,#textEditorWrap{
+  position:relative!important;
+  z-index:2!important;
+  min-height:0!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  padding-right:4px!important;
+}
+.builder-editor{
+  height:auto!important;
+}
+.builder-workout-actions,.builder-footer-actions,.admin-foot-actions,.text-editor-actions{
+  gap:9px!important;
+}
+.builder-inline-btn,.builder-outline-btn,.builder-save-btn,.builder-danger,.builder-add-btn,.menu-toggle{
+  min-height:40px!important;
+  touch-action:manipulation!important;
+}
+.builder-bottom-row,.admin-foot{
+  gap:10px!important;
+}
+.menu{
+  z-index:60000!important;
+}
+.modal-overlay,.weekly-overlay,.calendar-overlay,.client-account-overlay,.review-overlay,.export-overlay{
+  z-index:45000!important;
+}
+@media(max-width:1050px){
+  .program-bar{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .program-panel{
+    grid-column:1/-1!important;
+  }
+  .admin{
+    width:calc(100vw - 22px)!important;
+    min-width:0!important;
+    top:11px!important;
+    bottom:11px!important;
+  }
+}
+@media(max-width:720px){
+  .quick-actions{
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+    flex-wrap:nowrap!important;
+  }
+  .quick-btn{
+    flex:0 0 auto!important;
+  }
+  .station-card{
+    min-height:176px!important;
+  }
+  .exercise{
+    font-size:clamp(34px,9vw,64px)!important;
+  }
+}
+
 </style>
 </head>
 <body class="fullscreen-clean one-workout">
@@ -1597,8 +1862,13 @@ async function loadSharedClientDirectory(interactive){
   }
 }
 
+var AXON_MEMORY_STORE = window.AXON_MEMORY_STORE || (window.AXON_MEMORY_STORE = {});
 function readJSON(key, fallback){
-  try { return JSON.parse(localStorage.getItem(key) || "null") || fallback; } catch(e) { return fallback; }
+  var raw = null;
+  try { raw = localStorage.getItem(key); } catch(e) {}
+  if(!raw){ try { raw = sessionStorage.getItem(key); } catch(e) {} }
+  if(!raw && AXON_MEMORY_STORE[key]) raw = AXON_MEMORY_STORE[key];
+  try { return JSON.parse(raw || "null") || fallback; } catch(e) { return fallback; }
 }
 function saveSettings(){
   localStorage.setItem(SETTINGS_KEY, JSON.stringify({autoRotate:autoRotate, oneWorkout:oneWorkout, multiViewManual:multiViewManual, tileZoom:tileZoom, editorMode:editorMode}));
@@ -1633,11 +1903,11 @@ function getBoardHistory(){
   return Array.isArray(history) ? history : [];
 }
 function safeLocalSet(key, value){
-  try{ localStorage.setItem(key, value); return true; }
-  catch(err){
-    console.error("Local save failed", err);
-    return false;
-  }
+  AXON_MEMORY_STORE[key] = value;
+  var localOk = false, sessionOk = false;
+  try{ localStorage.setItem(key, value); localOk = true; } catch(err){ console.warn("Local save failed; using session fallback", err); }
+  try{ sessionStorage.setItem(key, value); sessionOk = true; } catch(err){ console.warn("Session save fallback failed; memory backup active", err); }
+  return localOk || sessionOk;
 }
 function cleanTextValue(value){ return String(value == null ? "" : value).replace(/[\r\n|]+/g," ").trim(); }
 function serializeBoardData(board){
@@ -2599,11 +2869,16 @@ function animateEditorSwap(panel,mode){
   if(tabs){tabs.classList.remove("swap-rail");void tabs.offsetWidth;tabs.classList.add("swap-rail");}
 }
 function setEditorMode(mode){
+  refreshElementCache();
   var nextMode=mode==="txt"?"txt":"builder";
   var previousMode=editorMode;
   var changed=nextMode!==previousMode;
   editorMode=nextMode;
   saveSettings();
+  if(!el.builderEditor || !el.textEditorWrap || !el.builderEditorTab || !el.txtEditorTab){
+    console.warn("Editor panel not ready.");
+    return;
+  }
   el.builderEditor.hidden=editorMode!=="builder";
   el.textEditorWrap.hidden=editorMode!=="txt";
   el.builderEditorTab.classList.toggle("active",editorMode==="builder");
@@ -2724,9 +2999,28 @@ function renderWorkoutBuilder(){
   el.builderCircuits.innerHTML="";var fragment=document.createDocumentFragment();(program.circuits||[]).forEach(function(circuit,index){fragment.appendChild(makeBuilderCircuitCard(circuit,index));});el.builderCircuits.appendChild(fragment);
   updateBuilderSummary();
 }
+function refreshElementCache(){
+  ids.forEach(function(id){ el[id] = document.getElementById(id); });
+}
 function openAdmin(){
-  builderDraft=cloneBuilderValue(data);builderWeekIndex=activeWeekIndex;builderProgramIndex=activeClassIndex;builderDirty=false;builderDrag=null;
-  el.editor.value=boardText;el.editorStatus.textContent="";el.editorStatus.className="status";el.admin.classList.add("open");setEditorMode(editorMode);
+  try{
+    refreshElementCache();
+    if(!el.admin) throw new Error("Local Board panel is missing from the page.");
+    if(!el.editor) throw new Error("TXT editor is missing from the Local Board.");
+    builderDraft = cloneBuilderValue(data && data.weeks ? data : parseBoardText(boardText || SAMPLE_TEXT));
+    builderWeekIndex = Math.max(0, Math.min(activeWeekIndex || 0, (builderDraft.weeks || []).length - 1));
+    builderProgramIndex = Math.max(0, activeClassIndex || 0);
+    builderDirty = false;
+    builderDrag = null;
+    el.editor.value = boardText || serializeBoardData(builderDraft);
+    if(el.editorStatus){ el.editorStatus.textContent = ""; el.editorStatus.className = "status"; }
+    el.admin.classList.add("open");
+    setEditorMode(editorMode === "txt" ? "txt" : "builder");
+    requestAnimationFrame(function(){ try{ el.admin.scrollTop = 0; }catch(e){} });
+  }catch(err){
+    console.error("Local Board open failed", err);
+    alert("Local Board could not open. Refresh once and try again. Detail: " + (err.message || err));
+  }
 }
 function closeAdmin(){el.admin.classList.remove("open");builderDrag=null;}
 function loadSampleIntoEditor(){el.editor.value=SAMPLE_TEXT;setEditorMode("txt");el.editorStatus.textContent="Starter board loaded into TXT only. Save it to replace the Local Board.";el.editorStatus.className="status";}
@@ -2796,7 +3090,7 @@ function uploadFile(event){
   reader.onerror=function(){alert("The selected backup file could not be read.");event.target.value="";};
   reader.readAsText(file);
 }
-function downloadCurrentText(){var text=editorMode==="txt" && el.editor.value ? el.editor.value : serializeBoardData(builderDraft || data);downloadText("tf-workout-board-backup.txt",text,"text/plain;charset=utf-8");}
+function downloadCurrentText(){var text=editorMode==="txt" && el.editor.value ? el.editor.value : serializeBoardData(builderDraft || data);downloadText("axon-workout-board-backup.txt",text,"text/plain;charset=utf-8");}
 function tick(){
   renderClock();
   if(countdownRunning){
