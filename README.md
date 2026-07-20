@@ -37,10 +37,9 @@ Keep the same Netlify environment variables already used by the shared client-sy
 - Removed lower tile note/prescription row from display tiles to prevent text sinking.
 - Preserved compact multi-view readability.
 
-## v46 Functionality Restore
-- Started from v44 stable visual package, not v45.
-- Undid the larger v45 station tile text sizing.
-- Hardened Local Board opener and editor mode without capture-event button hacks.
-- Added safe local/session/memory storage fallback.
-- Raised Menu and Local Board overlay z-index without changing core button behavior.
-- Preserved existing Local Board storage keys so restored workouts remain available.
+## v47 Direct Button Repair
+- Rebuilt action buttons with explicit IDs and direct JS event listeners.
+- Local Board now has a fallback opener that forces the modal visible even if the older builder init throws.
+- Removed bad inline content from the external XLSX script tag.
+- Balanced station tile text sizing back down.
+- Preserved Local Board storage keys and saved workout compatibility.
