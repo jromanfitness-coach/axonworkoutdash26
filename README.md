@@ -37,9 +37,9 @@ Keep the same Netlify environment variables already used by the shared client-sy
 - Removed lower tile note/prescription row from display tiles to prevent text sinking.
 - Preserved compact multi-view readability.
 
-## v47 Direct Button Repair
-- Rebuilt action buttons with explicit IDs and direct JS event listeners.
-- Local Board now has a fallback opener that forces the modal visible even if the older builder init throws.
-- Removed bad inline content from the external XLSX script tag.
-- Balanced station tile text sizing back down.
-- Preserved Local Board storage keys and saved workout compatibility.
+## v48 Hard Local Board Fix
+- Local Board button now calls a dedicated hard opener instead of the fragile legacy path.
+- The hard opener forces the Workout Builder popup visible first, then initializes the builder safely.
+- Menu → Local Board and quick-action Local Board both use the same hard opener.
+- The global openAdmin function is overwritten after load so keyboard/menu legacy paths also open the popup.
+- Tile text sizing is balanced back down.

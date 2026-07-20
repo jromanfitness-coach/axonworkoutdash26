@@ -1006,9 +1006,9 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
 }
 
 
-/* v47 functional overlay and balanced station sizing */
+/* v48 Local Board popup and balanced tile sizing */
 .exercise{
-  font-size:clamp(32px,4.35vw,82px)!important;
+  font-size:clamp(32px,4.25vw,80px)!important;
   line-height:.94!important;
   letter-spacing:-.028em!important;
 }
@@ -1016,12 +1016,30 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
   min-height:clamp(158px,16.6vh,240px)!important;
 }
 .station-badge{
-  font-size:clamp(30px,3.35vw,68px)!important;
+  font-size:clamp(30px,3.25vw,66px)!important;
   min-width:clamp(112px,10vw,198px)!important;
   min-height:clamp(64px,6vw,104px)!important;
 }
 .multi-view .exercise{
-  font-size:clamp(15px,1.36vw,25px)!important;
+  font-size:clamp(15px,1.35vw,25px)!important;
+}
+.admin{
+  z-index:99999!important;
+  pointer-events:auto!important;
+  width:min(88vw,1480px)!important;
+  min-width:min(860px,calc(100vw - 28px))!important;
+  overflow:hidden!important;
+}
+.admin.open{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+#builderEditor,#textEditorWrap,.builder-editor{
+  min-height:0!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
 }
 .topbar{
   overflow:visible!important;
@@ -1033,24 +1051,7 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
   max-height:calc(100vh - 140px)!important;
   overflow:auto!important;
 }
-.admin{
-  z-index:50000!important;
-  width:min(88vw,1480px)!important;
-  min-width:min(860px,calc(100vw - 28px))!important;
-  overflow:hidden!important;
-}
-.admin.open{
-  display:grid!important;
-}
-#builderEditor,#textEditorWrap,.builder-editor{
-  min-height:0!important;
-  overflow:auto!important;
-  overscroll-behavior:contain!important;
-}
-.modal-overlay,.weekly-overlay,.calendar-overlay{
-  z-index:45000!important;
-}
-.quick-btn,.menu button,.builder-inline-btn,.builder-save-btn,.builder-add-btn{
+#axonBtnLocalBoard,#axonMenuLocalBoard,.quick-btn,.menu button{
   pointer-events:auto!important;
   touch-action:manipulation!important;
 }
@@ -1058,11 +1059,83 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
   .admin{width:calc(100vw - 22px)!important;min-width:0!important}
 }
 @media(max-width:720px){
-  .exercise{font-size:clamp(29px,7.8vw,56px)!important}
+  .exercise{font-size:clamp(29px,7.6vw,56px)!important}
   .menu{position:fixed!important;left:12px!important;right:12px!important;top:92px!important;width:auto!important;max-height:calc(100vh - 112px)!important}
 }
 
 </style>
+
+<script>
+/* v48 hard Local Board opener: independent of the old builder path. */
+(function(){
+  function showPanel(){
+    var panel = document.getElementById("admin");
+    if(!panel){
+      alert("Workout Builder popup is missing from this deployment.");
+      return false;
+    }
+    panel.classList.add("open");
+    panel.style.setProperty("display","grid","important");
+    panel.style.setProperty("visibility","visible","important");
+    panel.style.setProperty("opacity","1","important");
+    panel.style.setProperty("pointer-events","auto","important");
+    panel.setAttribute("aria-hidden","false");
+    try{ panel.scrollTop = 0; }catch(e){}
+    return true;
+  }
+
+  function initializeBuilderSafely(){
+    try{ if(typeof refreshElementCache === "function") refreshElementCache(); }catch(e){}
+    try{
+      if(typeof data !== "undefined" && typeof cloneBuilderValue === "function"){
+        window.builderDraft = cloneBuilderValue(data && data.weeks ? data : (typeof parseBoardText === "function" ? parseBoardText(window.boardText || window.SAMPLE_TEXT || "") : data));
+      }
+    }catch(e){ console.warn("Builder draft refresh skipped", e); }
+    try{
+      if(typeof setEditorMode === "function") setEditorMode("builder");
+      else{
+        var builder = document.getElementById("builderEditor");
+        var txt = document.getElementById("textEditorWrap");
+        var btab = document.getElementById("builderEditorTab");
+        var ttab = document.getElementById("txtEditorTab");
+        if(builder) builder.hidden = false;
+        if(txt) txt.hidden = true;
+        if(btab) btab.classList.add("active");
+        if(ttab) ttab.classList.remove("active");
+      }
+    }catch(error){
+      console.error("Builder render failed, leaving popup open.", error);
+      var builder = document.getElementById("builderEditor");
+      var txt = document.getElementById("textEditorWrap");
+      if(builder) builder.hidden = false;
+      if(txt) txt.hidden = true;
+    }
+  }
+
+  window.axonOpenLocalBoardHard = function(event){
+    if(event){ event.preventDefault(); event.stopPropagation(); }
+    var ok = showPanel();
+    if(ok) setTimeout(initializeBuilderSafely, 0);
+    return false;
+  };
+
+  function bindLocalBoardButtons(){
+    ["axonBtnLocalBoard","axonMenuLocalBoard"].forEach(function(id){
+      var btn = document.getElementById(id);
+      if(!btn) return;
+      btn.onclick = window.axonOpenLocalBoardHard;
+      btn.style.pointerEvents = "auto";
+    });
+    window.openAdmin = window.axonOpenLocalBoardHard;
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bindLocalBoardButtons);
+  else bindLocalBoardButtons();
+  setTimeout(bindLocalBoardButtons, 250);
+  setTimeout(bindLocalBoardButtons, 1000);
+})();
+</script>
+
 </head>
 <body class="fullscreen-clean one-workout">
 <div class="login-gate" id="loginGate">
@@ -1113,7 +1186,7 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
           <button type="button" onclick="changeTileZoom(-10)">Tile Zoom −</button>
           <button type="button" onclick="changeTileZoom(10)">Tile Zoom +</button>
           <button type="button" onclick="resetTileZoom()">Tile Zoom: <span id="tileZoomStatus">100%</span></button>
-          <button type="button" id="axonMenuLocalBoard" onclick="openAdmin()">Local Board</button>
+          <button type="button" id="axonMenuLocalBoard" onclick="return axonOpenLocalBoardHard(event)">Local Board</button>
           <button type="button" onclick="openClientPortal()">Open Client Portal</button>
           <button type="button" onclick="configureClientPublish()">Set Publish Key</button>
           <button type="button" onclick="publishClientPortal(true)">Sync Client Portal</button>
@@ -1132,31 +1205,31 @@ h1,.program-title,.exercise,.modal-title,.weekly-title,.admin-title,.login-title
   </header>
 
   <section class="quick-actions" aria-label="Quick class controls">
-    <button type="button" id="axonBtnPrev" class="quick-btn" onclick="prevCircuit()" title="Skip Left">
+    <button type="button" class="quick-btn" onclick="prevCircuit()" title="Skip Left">
       <span class="quick-icon">⏮</span><span class="quick-label">Skip Left</span>
     </button>
-    <button type="button" id="axonBtnWeekly" class="quick-btn" onclick="openWeeklyView()" title="Weekly View">
+    <button type="button" class="quick-btn" onclick="openWeeklyView()" title="Weekly View">
       <span class="quick-icon">W</span><span class="quick-label">Weekly</span>
     </button>
-    <button type="button" id="axonBtnZoomOut" class="quick-btn" onclick="changeTileZoom(-10)" title="Decrease Tile Size">
+    <button type="button" class="quick-btn" onclick="changeTileZoom(-10)" title="Decrease Tile Size">
       <span class="quick-icon">−</span><span class="quick-label">Zoom Out</span>
     </button>
-    <button type="button" id="axonBtnZoomIn" class="quick-btn" onclick="changeTileZoom(10)" title="Increase Tile Size">
+    <button type="button" class="quick-btn" onclick="changeTileZoom(10)" title="Increase Tile Size">
       <span class="quick-icon">+</span><span class="quick-label">Zoom In</span>
     </button>
-    <button type="button" id="axonBtnCalendar" class="quick-btn" onclick="openCalendarView()" title="Program Calendar">
+    <button type="button" class="quick-btn" onclick="openCalendarView()" title="Program Calendar">
       <span class="quick-icon">▦</span><span class="quick-label">Calendar</span>
     </button>
-    <button type="button" id="axonBtnLocalBoard" class="quick-btn" onclick="openAdmin()" title="Open Local Board">
+    <button type="button" id="axonBtnLocalBoard" class="quick-btn" onclick="return axonOpenLocalBoardHard(event)" title="Open Local Board">
       <span class="quick-icon">▤</span><span class="quick-label">Local Board</span>
     </button>
-    <button type="button" id="axonBtnClientView" class="quick-btn" onclick="openClientPortal()" title="Preview Client Workout Portal">
+    <button type="button" class="quick-btn" onclick="openClientPortal()" title="Preview Client Workout Portal">
       <span class="quick-icon">↗</span><span class="quick-label">Client View</span>
     </button>
     <button type="button" id="clientPortalManagerBtn" class="quick-btn" title="Manage Client Access Pins">
       <span class="quick-icon">👥</span><span class="quick-label">Manage Clients</span>
     </button>
-    <button type="button" id="axonBtnNext" class="quick-btn" onclick="nextCircuit()" title="Skip Right">
+    <button type="button" class="quick-btn" onclick="nextCircuit()" title="Skip Right">
       <span class="quick-icon">⏭</span><span class="quick-label">Skip Right</span>
     </button>
   </section>
@@ -1762,13 +1835,8 @@ async function loadSharedClientDirectory(interactive){
   }
 }
 
-var AXON_MEMORY_STORE = window.AXON_MEMORY_STORE || (window.AXON_MEMORY_STORE = {});
 function readJSON(key, fallback){
-  var raw = null;
-  try { raw = localStorage.getItem(key); } catch(e) {}
-  if(!raw){ try { raw = sessionStorage.getItem(key); } catch(e) {} }
-  if(!raw && AXON_MEMORY_STORE[key]) raw = AXON_MEMORY_STORE[key];
-  try { return JSON.parse(raw || "null") || fallback; } catch(e) { return fallback; }
+  try { return JSON.parse(localStorage.getItem(key) || "null") || fallback; } catch(e) { return fallback; }
 }
 function saveSettings(){
   localStorage.setItem(SETTINGS_KEY, JSON.stringify({autoRotate:autoRotate, oneWorkout:oneWorkout, multiViewManual:multiViewManual, tileZoom:tileZoom, editorMode:editorMode}));
@@ -1803,11 +1871,11 @@ function getBoardHistory(){
   return Array.isArray(history) ? history : [];
 }
 function safeLocalSet(key, value){
-  AXON_MEMORY_STORE[key] = value;
-  var localOk = false, sessionOk = false;
-  try{ localStorage.setItem(key, value); localOk = true; } catch(err){ console.warn("Local save failed; using session fallback", err); }
-  try{ sessionStorage.setItem(key, value); sessionOk = true; } catch(err){ console.warn("Session save fallback failed; memory backup active", err); }
-  return localOk || sessionOk;
+  try{ localStorage.setItem(key, value); return true; }
+  catch(err){
+    console.error("Local save failed", err);
+    return false;
+  }
 }
 function cleanTextValue(value){ return String(value == null ? "" : value).replace(/[\r\n|]+/g," ").trim(); }
 function serializeBoardData(board){
@@ -2769,16 +2837,11 @@ function animateEditorSwap(panel,mode){
   if(tabs){tabs.classList.remove("swap-rail");void tabs.offsetWidth;tabs.classList.add("swap-rail");}
 }
 function setEditorMode(mode){
-  refreshElementCache();
   var nextMode=mode==="txt"?"txt":"builder";
   var previousMode=editorMode;
   var changed=nextMode!==previousMode;
   editorMode=nextMode;
   saveSettings();
-  if(!el.builderEditor || !el.textEditorWrap || !el.builderEditorTab || !el.txtEditorTab){
-    console.warn("Editor panel not ready; Local Board modal is still open.");
-    return;
-  }
   el.builderEditor.hidden=editorMode!=="builder";
   el.textEditorWrap.hidden=editorMode!=="txt";
   el.builderEditorTab.classList.toggle("active",editorMode==="builder");
@@ -2902,27 +2965,16 @@ function renderWorkoutBuilder(){
 function refreshElementCache(){
   ids.forEach(function(id){ el[id] = document.getElementById(id); });
 }
-function openAdmin(){
-  try{
-    refreshElementCache();
-    if(!el.admin) throw new Error("Local Board panel missing.");
-    builderDraft=cloneBuilderValue(data && data.weeks ? data : parseBoardText(boardText || SAMPLE_TEXT));
-    builderWeekIndex=Math.max(0,Math.min(activeWeekIndex||0,Math.max(0,(builderDraft.weeks||[]).length-1)));
-    builderProgramIndex=Math.max(0,activeClassIndex||0);
-    builderDirty=false;builderDrag=null;
-    if(el.editor) el.editor.value=boardText || serializeBoardData(builderDraft);
-    if(el.editorStatus){el.editorStatus.textContent="";el.editorStatus.className="status";}
-    el.admin.classList.add("open");
-    el.admin.style.display="grid";
-    setEditorMode(editorMode==="txt"?"txt":"builder");
-  }catch(err){
-    console.error("Local Board open failed",err);
-    var panel=document.getElementById("admin");
-    if(panel){panel.classList.add("open");panel.style.display="grid";}
-    alert("Local Board opened in recovery mode. If the builder is blank, use TXT Source or refresh once. Detail: "+(err.message||err));
-  }
+function openAdmin(event){
+  if(typeof window.axonOpenLocalBoardHard === "function") return window.axonOpenLocalBoardHard(event);
+  refreshElementCache();
+  builderDraft=cloneBuilderValue(data);builderWeekIndex=activeWeekIndex;builderProgramIndex=activeClassIndex;builderDirty=false;builderDrag=null;
+  if(el.editor) el.editor.value=boardText;
+  if(el.editorStatus){el.editorStatus.textContent="";el.editorStatus.className="status";}
+  if(el.admin){el.admin.classList.add("open");el.admin.style.setProperty("display","grid","important");}
+  setEditorMode(editorMode);
 }
-function closeAdmin(){refreshElementCache(); if(el.admin){el.admin.classList.remove("open");el.admin.style.display="";} builderDrag=null;}
+function closeAdmin(){try{refreshElementCache();}catch(e){} var panel=(el&&el.admin)||document.getElementById("admin"); if(panel){panel.classList.remove("open");panel.style.removeProperty("display");panel.style.removeProperty("visibility");panel.style.removeProperty("opacity");panel.style.removeProperty("pointer-events");panel.setAttribute("aria-hidden","true");} builderDrag=null;}
 function loadSampleIntoEditor(){el.editor.value=SAMPLE_TEXT;setEditorMode("txt");el.editorStatus.textContent="Starter board loaded into TXT only. Save it to replace the Local Board.";el.editorStatus.className="status";}
 function saveEditor(){
   var text=el.editor.value||"";
@@ -3033,64 +3085,21 @@ if(clientPublishSecret){setClientPortalStatus("publish key available for this se
 </script>
 
 <script>
-/* v47 direct button repair — independent from inline onclick attributes */
+/* v48 final local-board binding pass */
 (function(){
-  function byId(id){ return document.getElementById(id); }
-  function call(name, args){
-    try{
-      if(typeof window[name] === "function") return window[name].apply(window, args || []);
-      if(typeof eval(name) === "function") return eval(name).apply(window, args || []);
-    }catch(error){
-      console.error("Axon action failed:", name, error);
-      throw error;
+  function bind(){
+    if(typeof window.axonOpenLocalBoardHard === "function"){
+      window.openAdmin = window.axonOpenLocalBoardHard;
+      var quick = document.getElementById("axonBtnLocalBoard");
+      var menu = document.getElementById("axonMenuLocalBoard");
+      if(quick) quick.onclick = window.axonOpenLocalBoardHard;
+      if(menu) menu.onclick = window.axonOpenLocalBoardHard;
     }
   }
-  function forceLocalBoard(){
-    try{
-      call("openAdmin");
-    }catch(error){
-      var panel = byId("admin");
-      if(panel){
-        panel.classList.add("open");
-        panel.style.display = "grid";
-      }else{
-        alert("Local Board panel is missing from this deploy.");
-      }
-    }
-    setTimeout(function(){
-      var panel = byId("admin");
-      if(panel && !panel.classList.contains("open")){
-        panel.classList.add("open");
-        panel.style.display = "grid";
-      }
-    }, 0);
-  }
-  function bind(id, handler){
-    var node = byId(id);
-    if(!node) return;
-    node.onclick = null;
-    node.removeAttribute("onclick");
-    node.addEventListener("click", function(event){
-      event.preventDefault();
-      handler(event);
-    }, false);
-  }
-  function boot(){
-    bind("axonBtnPrev", function(){ call("prevCircuit"); });
-    bind("axonBtnWeekly", function(){ call("openWeeklyView"); });
-    bind("axonBtnZoomOut", function(){ call("changeTileZoom", [-10]); });
-    bind("axonBtnZoomIn", function(){ call("changeTileZoom", [10]); });
-    bind("axonBtnCalendar", function(){ call("openCalendarView"); });
-    bind("axonBtnLocalBoard", forceLocalBoard);
-    bind("axonMenuLocalBoard", forceLocalBoard);
-    bind("axonBtnClientView", function(){ call("openClientPortal"); });
-    bind("clientPortalManagerBtn", function(){ call("openClientAccounts"); });
-    bind("axonBtnNext", function(){ call("nextCircuit"); });
-  }
-  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-  else boot();
-  setTimeout(boot, 350);
-  window.axonForceLocalBoard = forceLocalBoard;
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);
+  else bind();
+  setTimeout(bind, 100);
+  setTimeout(bind, 600);
 })();
 </script>
 
