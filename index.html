@@ -338,6 +338,216 @@ select:focus{
   }
 }
 
+
+/* v53 remove Active Coach card + smart tile fitting + multi-circuit view */
+.topbar{
+  grid-template-columns:minmax(220px,1fr) auto auto!important;
+}
+.coach-card,
+.coach-menu{
+  display:none!important;
+}
+.grid{
+  align-content:stretch;
+}
+.tile{
+  min-height:clamp(160px,17.4vh,252px);
+}
+.exercise{
+  font-weight:1000!important;
+  letter-spacing:-.045em;
+  line-height:.90;
+  max-width:100%;
+  overflow-wrap:normal;
+  word-break:normal;
+  hyphens:auto;
+}
+.tile.text-xs .exercise{font-size:clamp(24px,2.95vw,58px);letter-spacing:-.035em;line-height:.94}
+.tile.text-sm .exercise{font-size:clamp(28px,3.45vw,68px);letter-spacing:-.04em;line-height:.92}
+.tile.text-md .exercise{font-size:clamp(32px,4.05vw,78px)}
+.tile.text-lg .exercise{font-size:clamp(36px,4.55vw,88px)}
+.tile.text-xl .exercise{font-size:clamp(42px,5.1vw,96px)}
+.target{
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.multi-circuit .grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.circuit-panel{
+  min-height:0;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr);
+  gap:10px;
+  padding:12px;
+  border:1px solid rgba(99,211,253,.18);
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(99,211,253,.10),transparent 34%),
+    linear-gradient(180deg,rgba(16,26,38,.50),rgba(7,17,29,.40));
+  box-shadow:0 18px 50px rgba(0,0,0,.20);
+  overflow:hidden;
+}
+.circuit-panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-width:0;
+}
+.circuit-panel-title{
+  color:var(--cyan);
+  font-weight:1000;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  font-size:clamp(12px,1vw,18px);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.circuit-panel-count{
+  color:rgba(248,241,227,.62);
+  font-weight:900;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  white-space:nowrap;
+}
+.circuit-tile-grid{
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-auto-rows:minmax(0,1fr);
+  gap:10px;
+}
+.multi-circuit .tile{
+  aspect-ratio:1.15/1;
+  min-height:0;
+  border-radius:24px;
+  padding:clamp(12px,1.2vw,20px);
+  gap:6px 10px;
+}
+.multi-circuit .station{
+  font-size:clamp(10px,.72vw,14px);
+  letter-spacing:.12em;
+}
+.multi-circuit .target{
+  min-width:auto;
+  min-height:clamp(36px,3.2vw,56px);
+  padding:7px 12px;
+  font-size:clamp(16px,1.8vw,32px);
+}
+.multi-circuit .tile.text-xs .exercise{font-size:clamp(15px,1.25vw,24px);line-height:.98;letter-spacing:-.015em}
+.multi-circuit .tile.text-sm .exercise{font-size:clamp(17px,1.55vw,28px);line-height:.96;letter-spacing:-.02em}
+.multi-circuit .tile.text-md .exercise{font-size:clamp(19px,1.85vw,34px);line-height:.94}
+.multi-circuit .tile.text-lg .exercise{font-size:clamp(22px,2.15vw,40px);line-height:.92}
+.multi-circuit .tile.text-xl .exercise{font-size:clamp(25px,2.45vw,46px);line-height:.90}
+#multiCircuitBtn.active{
+  border-color:rgba(99,211,253,.86)!important;
+  background:
+    linear-gradient(135deg,rgba(31,140,255,.38),rgba(99,211,253,.18),rgba(115,217,159,.12)),
+    rgba(7,17,29,.92)!important;
+  box-shadow:0 18px 48px rgba(31,140,255,.22),0 0 30px rgba(99,211,253,.18)!important;
+  color:#fff!important;
+}
+@media(max-width:1100px){
+  .multi-circuit .grid{
+    grid-template-columns:1fr;
+  }
+  .circuit-tile-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:650px){
+  .topbar{
+    grid-template-columns:1fr!important;
+  }
+  .circuit-tile-grid{
+    grid-template-columns:1fr;
+  }
+  .multi-circuit .tile{
+    aspect-ratio:auto;
+    min-height:150px;
+  }
+}
+
+
+/* v53.1 Axon insignia + rotating circuit label */
+.brand-logo-mark{
+  padding:8px!important;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(99,211,253,.18),transparent 58%),
+    rgba(3,8,14,.72)!important;
+}
+.brand-logo-mark img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  filter:drop-shadow(0 0 16px rgba(99,211,253,.42));
+}
+.circuit-label{
+  display:inline-flex;
+  width:max-content;
+  max-width:100%;
+  align-items:center;
+  gap:10px;
+  margin:8px 0 6px;
+  padding:7px 14px;
+  border:1px solid rgba(99,211,253,.36);
+  border-radius:999px;
+  background:
+    linear-gradient(135deg,rgba(31,140,255,.22),rgba(99,211,253,.10),rgba(115,217,159,.06)),
+    rgba(7,17,29,.68);
+  color:#9FD8FF;
+  box-shadow:0 0 26px rgba(31,140,255,.10);
+  font-size:clamp(12px,.9vw,16px);
+  font-weight:1000;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.circuit-label::before{
+  content:"";
+  width:9px;
+  height:9px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#63D3FD,#73D99F);
+  box-shadow:0 0 16px rgba(99,211,253,.55);
+  flex:0 0 auto;
+}
+.circuit-label.pulse{
+  animation:circuitLabelPulse .24s ease both;
+}
+@keyframes circuitLabelPulse{
+  from{transform:translateY(2px);opacity:.72;filter:blur(2px)}
+  to{transform:translateY(0);opacity:1;filter:blur(0)}
+}
+.multi-circuit .circuit-label{
+  border-color:rgba(99,211,253,.50);
+  color:#F8F1E3;
+}
+
+
+/* v53.2 white SVG insignia support */
+.brand-logo-mark{
+  background:
+    radial-gradient(circle at 50% 45%,rgba(99,211,253,.18),transparent 58%),
+    linear-gradient(145deg,rgba(7,17,29,.82),rgba(3,8,14,.92))!important;
+  border-color:rgba(99,211,253,.34)!important;
+}
+.brand-logo-mark img{
+  width:86%!important;
+  height:86%!important;
+  object-fit:contain!important;
+  margin:auto!important;
+  filter:drop-shadow(0 0 14px rgba(255,255,255,.22)) drop-shadow(0 0 20px rgba(99,211,253,.28))!important;
+}
+
 </style>
 </head>
 <body>
@@ -350,27 +560,16 @@ select:focus{
 </div>
 <main class="app" id="app">
   <header class="topbar">
-    <div class="brand"><div class="brand-mark">AX</div><div><div class="brand-sub">AXON PERFORMANCE</div><div class="brand-title">Workout Dashboard</div></div></div>
-    <div class="coach-card" id="coachCard">
-      <div class="coach-kicker"><span class="coach-dot"></span>ACTIVE COACH</div>
-      <button class="coach-select" id="coachSelectBtn" type="button" aria-expanded="false">
-        <span class="coach-name">Jordan · Admin Coach</span><span class="coach-chevron">⌄</span>
-      </button>
-      <div class="coach-tags"><span>Admin / Coach</span><span>Schedule view</span></div>
-      <div class="coach-menu" id="coachMenu" hidden>
-        <button type="button" data-coach="Jordan · Admin Coach">Jordan · Admin Coach</button>
-        <button type="button" data-coach="Coach View">Coach View</button>
-        <button type="button" data-coach="Schedule View">Schedule View</button>
-      </div>
-    </div>
+    <div class="brand"><div class="brand-mark brand-logo-mark"><img src="./assets/axon-insignia-white.svg" alt="Axon Performance" /></div><div><div class="brand-sub">AXON PERFORMANCE</div><div class="brand-title">Workout Dashboard</div></div></div>
+    
     <div class="clock"><div class="clock-main" id="clock">--:--</div><div class="clock-sub" id="dateLine">Live display</div></div>
     <div class="actions">
-      <button class="btn" id="prevBtn">← Skip</button><button class="btn" id="weeklyBtn">Weekly</button><button class="btn" id="compactBtn">Compact</button><button class="btn primary" id="localBoardBtn">Local Board</button><button class="btn" id="clientsBtn">Clients</button><button class="btn" id="exportBtn">Export</button><button class="btn" id="nextBtn">Skip →</button>
+      <button class="btn" id="prevBtn">← Skip</button><button class="btn" id="weeklyBtn">Weekly</button><button class="btn" id="multiCircuitBtn">Multi-Circuit</button><button class="btn primary" id="localBoardBtn">Local Board</button><button class="btn" id="clientsBtn">Clients</button><button class="btn" id="exportBtn">Export</button><button class="btn" id="nextBtn">Skip →</button>
       <div class="menu-wrap"><button class="btn" id="menuBtn">Menu</button><div class="menu" id="menu"><button class="btn primary" id="menuBoardBtn">Local Board</button><button class="btn" id="menuWeeklyBtn">Weekly View</button><button class="btn" id="menuClientsBtn">Manage Clients</button><button class="btn" id="menuExportBtn">Export JSON</button><button class="btn danger" id="logoutBtn">Logout</button></div></div>
     </div>
   </header>
   <section class="program-bar">
-    <div><div class="selects"><select id="weekSelect"></select><select id="programSelect"></select><select id="circuitSelect"></select></div><div class="program-title" id="programTitle">Workout</div><div class="program-desc" id="programDesc">Open Local Board to build or edit this training day.</div></div>
+    <div><div class="selects"><select id="weekSelect"></select><select id="programSelect"></select><select id="circuitSelect"></select></div><div class="program-title" id="programTitle">Workout</div><div class="circuit-label" id="activeCircuitLabel">ACTIVE CIRCUIT</div><div class="program-desc" id="programDesc">Open Local Board to build or edit this training day.</div></div>
     <div class="pill hour-pill is-green" id="hourPill"><strong id="hourCounter">00:00</strong><span id="hourPhase">Hour Count-Up</span><div class="hour-track"><div class="hour-progress" id="hourProgress"></div></div></div><div class="pill"><strong id="roundsValue">3</strong><span>Rounds</span></div><div class="pill"><strong id="movesValue">0</strong><span>Moves</span></div>
   </section>
   <section class="main">
@@ -398,11 +597,11 @@ const AUTH_USER='Admin1999', AUTH_PASS='jaxroman';
 const $=id=>document.getElementById(id);
 function clone(x){return JSON.parse(JSON.stringify(x));}
 function now(){return new Date().toISOString();}
-function sample(){return {version:52,weeks:[{week:'Week 1',summary:'Starter Axon training board',programs:[{name:'Semi-Private Strength',mode:'strength',desc:'Full-body strength circuit. Open Local Board to customize.',rounds:3,work:0,rest:0,circuits:[{name:'Circuit A',stations:[{exercise:'Goblet Squat',prescription:'10',note:''},{exercise:'DB Bench Press',prescription:'10',note:''},{exercise:'TRX Row',prescription:'12',note:''},{exercise:'Sled Push',prescription:'40yd',note:''}]},{name:'Circuit B',stations:[{exercise:'RDL',prescription:'8',note:''},{exercise:'Half-Kneel Press',prescription:'8/side',note:''},{exercise:'Dead Bug',prescription:'10/side',note:''},{exercise:'Bike Sprint',prescription:'30s',note:''}]}]}]}]};}
-let data=loadBoard(), draft=clone(data), activeWeek=0, activeProgram=0, activeCircuit=0, compact=false;
+function sample(){return {version:532,weeks:[{week:'Week 1',summary:'Starter Axon training board',programs:[{name:'Semi-Private Strength',mode:'strength',desc:'Full-body strength circuit. Open Local Board to customize.',rounds:3,work:0,rest:0,circuits:[{name:'Circuit A',stations:[{exercise:'Goblet Squat',prescription:'10',note:''},{exercise:'DB Bench Press',prescription:'10',note:''},{exercise:'TRX Row',prescription:'12',note:''},{exercise:'Sled Push',prescription:'40yd',note:''}]},{name:'Circuit B',stations:[{exercise:'RDL',prescription:'8',note:''},{exercise:'Half-Kneel Press',prescription:'8/side',note:''},{exercise:'Dead Bug',prescription:'10/side',note:''},{exercise:'Bike Sprint',prescription:'30s',note:''}]}]}]}]};}
+let data=loadBoard(), draft=clone(data), activeWeek=0, activeProgram=0, activeCircuit=0, multiCircuit=false;
 function normalize(board){board=board&&board.weeks?board:sample();board.weeks=board.weeks.length?board.weeks:sample().weeks;board.weeks.forEach((w,wi)=>{w.week=w.week||`Week ${wi+1}`;w.summary=w.summary||'';w.programs=w.programs&&w.programs.length?w.programs:[{name:'Workout',mode:'strength',desc:'',rounds:3,work:0,rest:0,circuits:[]}];w.programs.forEach((p,pi)=>{p.name=p.name||`Workout ${pi+1}`;p.mode=p.mode||'strength';p.desc=p.desc||'';p.rounds=Number(p.rounds)||3;p.work=Number(p.work)||0;p.rest=Number(p.rest)||0;p.circuits=p.circuits&&p.circuits.length?p.circuits:[{name:'Circuit 1',stations:[{exercise:'Exercise',prescription:'',note:''}]}];p.circuits.forEach((c,ci)=>{c.name=c.name||`Circuit ${ci+1}`;c.stations=c.stations&&c.stations.length?c.stations:[{exercise:'Exercise',prescription:'',note:''}];c.stations.forEach(s=>{s.exercise=s.exercise||'Exercise';s.prescription=s.prescription||'';s.note=s.note||'';});});});});return board;}
 function loadBoard(){try{let raw=localStorage.getItem(KEYS.boardRecord)||localStorage.getItem(KEYS.boardBackup);if(raw){let parsed=JSON.parse(raw);return normalize(parsed.data||parsed.board||parsed)}}catch(e){console.warn(e)}return normalize(sample());}
-function saveBoard(source='Workout Builder'){const record={version:52,savedAt:now(),source,data:normalize(data)};localStorage.setItem(KEYS.boardRecord,JSON.stringify(record));localStorage.setItem(KEYS.boardBackup,JSON.stringify(record));$('saveStatus').textContent=`Local Board saved ${new Date().toLocaleTimeString()} · ${source}`;}
+function saveBoard(source='Workout Builder'){const record={version:532,savedAt:now(),source,data:normalize(data)};localStorage.setItem(KEYS.boardRecord,JSON.stringify(record));localStorage.setItem(KEYS.boardBackup,JSON.stringify(record));$('saveStatus').textContent=`Local Board saved ${new Date().toLocaleTimeString()} · ${source}`;}
 function week(){return data.weeks[activeWeek]||data.weeks[0]}
 function program(){const w=week();return (w.programs&&w.programs[activeProgram])||w.programs[0]}
 function circuit(){const p=program();return (p.circuits&&p.circuits[activeCircuit])||p.circuits[0]}
@@ -410,8 +609,56 @@ function safeIndex(){activeWeek=Math.max(0,Math.min(activeWeek,data.weeks.length
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function render(){safeIndex();renderSelects();renderProgram();renderTiles();}
 function renderSelects(){const ws=$('weekSelect'),ps=$('programSelect'),cs=$('circuitSelect');ws.innerHTML=data.weeks.map((w,i)=>`<option value="${i}">${escapeHtml(w.week)}</option>`).join('');ws.value=activeWeek;ps.innerHTML=week().programs.map((p,i)=>`<option value="${i}">${escapeHtml(p.name)}</option>`).join('');ps.value=activeProgram;cs.innerHTML=program().circuits.map((c,i)=>`<option value="${i}">${escapeHtml(c.name)}</option>`).join('');cs.value=activeCircuit;}
-function renderProgram(){const p=program(),c=circuit();$('programTitle').textContent=p.name||'Workout';$('programDesc').textContent=`${c.name||'Circuit'} · ${p.desc||week().summary||'Open Local Board to customize.'}`;$('roundsValue').textContent=p.rounds||3;$('movesValue').textContent=(c.stations||[]).length;}
-function renderTiles(){const list=(circuit().stations||[]);$('stationGrid').innerHTML=list.map((s,i)=>`<article class="tile"><div class="station">Station ${i+1}</div><div class="target">${escapeHtml(s.prescription||'Work')}</div><div class="exercise">${escapeHtml(s.exercise||'Exercise')}</div></article>`).join('')||'<div class="empty">No exercises. Open Local Board.</div>';}
+function tileClass(text){
+  const len=String(text||'').trim().length;
+  if(len>26)return 'text-xs';
+  if(len>20)return 'text-sm';
+  if(len>14)return 'text-md';
+  if(len>8)return 'text-lg';
+  return 'text-xl';
+}
+function tileMarkup(s,i){
+  const exercise=s.exercise||'Exercise';
+  return `<article class="tile ${tileClass(exercise)}"><div class="station">Station ${i+1}</div><div class="target">${escapeHtml(s.prescription||'Work')}</div><div class="exercise">${escapeHtml(exercise)}</div></article>`;
+}
+function circuitsForDisplay(){
+  const p=program(), circuits=p.circuits||[];
+  if(!multiCircuit||circuits.length<2)return [circuit()];
+  const first=activeCircuit;
+  const second=(activeCircuit+1)%circuits.length;
+  return first===second?[circuits[first]]:[circuits[first],circuits[second]];
+}
+function renderProgram(){
+  const p=program(), circuits=circuitsForDisplay();
+  const moveCount=circuits.reduce((sum,c)=>sum+((c&&c.stations)||[]).length,0);
+  const circuitText=circuits.map(c=>c.name||'Circuit').join(' + ');
+  $('programTitle').textContent=p.name||'Workout';
+  const label=$('activeCircuitLabel');
+  if(label){
+    label.textContent=multiCircuit&&circuits.length>1?`MULTI-CIRCUIT · ${circuitText}`:`ACTIVE CIRCUIT · ${circuitText}`;
+    label.classList.remove('pulse');
+    void label.offsetWidth;
+    label.classList.add('pulse');
+  }
+  $('programDesc').textContent=p.desc||week().summary||'Open Local Board to customize.';
+  $('roundsValue').textContent=p.rounds||3;
+  $('movesValue').textContent=moveCount;
+}
+function renderTiles(){
+  const grid=$('stationGrid');
+  const circuits=circuitsForDisplay().filter(Boolean);
+  document.body.classList.toggle('multi-circuit',multiCircuit&&circuits.length>1);
+  if(!circuits.length){grid.innerHTML='<div class="empty">No exercises. Open Local Board.</div>';return;}
+  if(multiCircuit&&circuits.length>1){
+    grid.innerHTML=circuits.map((c,ci)=>{
+      const stations=(c.stations||[]);
+      return `<section class="circuit-panel"><div class="circuit-panel-head"><div class="circuit-panel-title">${escapeHtml(c.name||('Circuit '+(ci+1)))}</div><div class="circuit-panel-count">${stations.length} moves</div></div><div class="circuit-tile-grid">${stations.map((s,i)=>tileMarkup(s,i)).join('')||'<div class="empty">No exercises.</div>'}</div></section>`;
+    }).join('');
+    return;
+  }
+  const list=(circuits[0].stations||[]);
+  grid.innerHTML=list.map((s,i)=>tileMarkup(s,i)).join('')||'<div class="empty">No exercises. Open Local Board.</div>';
+}
 function renderCircuitList(){return;}
 function openBuilder(){draft=clone(data);activeWeek=Math.max(0,activeWeek);activeProgram=Math.max(0,activeProgram);renderBuilder();$('builderModal').classList.add('open');$('builderModal').setAttribute('aria-hidden','false');return false;}
 function closeBuilder(){$('builderModal').classList.remove('open');$('builderModal').setAttribute('aria-hidden','true');}
@@ -426,7 +673,7 @@ function addProgram(){syncDraft();dWeek().programs.push({name:`Workout ${dWeek()
 function addCircuit(){syncDraft();dProgram().circuits.push({name:`Circuit ${dProgram().circuits.length+1}`,stations:[{exercise:'Exercise',prescription:'',note:''}]});renderBuilder();}
 function deleteWorkout(){if(!confirm('Delete this workout?'))return;syncDraft();dWeek().programs.splice(activeProgram,1);if(!dWeek().programs.length)dWeek().programs.push({name:'Workout',mode:'strength',desc:'',rounds:3,work:0,rest:0,circuits:[{name:'Circuit 1',stations:[{exercise:'Exercise',prescription:'',note:''}]}]});activeProgram=0;renderBuilder();}
 function download(name,text,type='application/json;charset=utf-8'){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),0)}
-function exportBoard(){syncDraft();download('axon-workout-board-v52.json',JSON.stringify({exportedAt:now(),data:draft},null,2));}
+function exportBoard(){syncDraft();download('axon-workout-board-v53-2.json',JSON.stringify({exportedAt:now(),data:draft},null,2));}
 function importBoardFile(file){const r=new FileReader();r.onload=()=>{try{let txt=String(r.result||'');let parsed=txt.trim().startsWith('{')?JSON.parse(txt):null;if(parsed)draft=normalize(parsed.data||parsed.board||parsed);else throw new Error('Use a JSON export from this builder.');activeWeek=0;activeProgram=0;renderBuilder();setBuilderStatus('Imported board. Press Save Local Board.','good')}catch(e){setBuilderStatus('Import failed: '+(e.message||e),'bad')}};r.readAsText(file)}
 function openWeekly(){renderWeekly();$('weeklyModal').classList.add('open')}
 function renderWeekly(){$('weeklyCards').innerHTML=data.weeks.map(w=>`<div class="info-card"><h3>${escapeHtml(w.week)}</h3><p>${escapeHtml(w.summary||'No summary')}</p><p>${w.programs.map(p=>escapeHtml(p.name)+' · '+p.circuits.length+' circuits').join('<br>')}</p></div>`).join('')}
@@ -443,7 +690,7 @@ $('weekSelect').addEventListener('change',e=>{activeWeek=Number(e.target.value);
 $('localBoardBtn').addEventListener('click',openBuilder);$('menuBoardBtn').addEventListener('click',openBuilder);$('closeBuilderBtn').addEventListener('click',closeBuilder);$('saveBuilderBtn').addEventListener('click',saveBuilder);$('addWeekBtn').addEventListener('click',addWeek);$('addProgramBtn').addEventListener('click',addProgram);$('addCircuitBtn').addEventListener('click',addCircuit);$('deleteWorkoutBtn').addEventListener('click',deleteWorkout);$('exportBuilderBtn').addEventListener('click',exportBoard);$('exportBtn').addEventListener('click',()=>download('axon-workout-dashboard-backup.json',JSON.stringify({exportedAt:now(),data},null,2)));$('menuExportBtn').addEventListener('click',()=>download('axon-workout-dashboard-backup.json',JSON.stringify({exportedAt:now(),data},null,2)));$('importBtn').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',e=>{if(e.target.files[0])importBoardFile(e.target.files[0]);e.target.value=''});
 $('builderModal').addEventListener('click',e=>{if(e.target===$('builderModal'))closeBuilder();let chip=e.target.closest('[data-b-week]');if(chip){syncDraft();activeWeek=Number(chip.dataset.bWeek);activeProgram=0;renderBuilder()}let prog=e.target.closest('[data-b-program]');if(prog){syncDraft();activeProgram=Number(prog.dataset.bProgram);renderBuilder()}let add=e.target.closest('[data-add-ex]');if(add){syncDraft();dProgram().circuits[Number(add.dataset.addEx)].stations.push({exercise:'Exercise',prescription:'',note:''});renderBuilder()}let dc=e.target.closest('[data-del-circuit]');if(dc){syncDraft();dProgram().circuits.splice(Number(dc.dataset.delCircuit),1);if(!dProgram().circuits.length)dProgram().circuits.push({name:'Circuit 1',stations:[{exercise:'Exercise',prescription:'',note:''}]});renderBuilder()}let de=e.target.closest('[data-del-ex]');if(de){syncDraft();let [ci,si]=de.dataset.delEx.split(':').map(Number);let c=dProgram().circuits[ci];c.stations.splice(si,1);if(!c.stations.length)c.stations.push({exercise:'Exercise',prescription:'',note:''});renderBuilder()}});
 $('weeklyBtn').addEventListener('click',openWeekly);$('menuWeeklyBtn').addEventListener('click',openWeekly);$('closeWeeklyBtn').addEventListener('click',closeWeekly);$('clientsBtn').addEventListener('click',openClients);$('menuClientsBtn').addEventListener('click',openClients);$('closeClientsBtn').addEventListener('click',closeClients);$('addClientBtn').addEventListener('click',addClient);$('clientsModal').addEventListener('click',e=>{if(e.target===$('clientsModal'))closeClients();let b=e.target.closest('[data-del-client]');if(b){let list=clients();list.splice(Number(b.dataset.delClient),1);saveClients(list);renderClients()}});
-$('prevBtn').addEventListener('click',()=>{activeCircuit=(activeCircuit-1+program().circuits.length)%program().circuits.length;render()});$('nextBtn').addEventListener('click',()=>{activeCircuit=(activeCircuit+1)%program().circuits.length;render()});$('compactBtn').addEventListener('click',()=>{compact=!compact;document.body.classList.toggle('compact',compact);$('compactBtn').textContent=compact?'Comfort':'Compact'});$('menuBtn').addEventListener('click',e=>{$('menu').classList.toggle('open')});document.addEventListener('click',e=>{if(!e.target.closest('.menu-wrap'))$('menu').classList.remove('open')});$('logoutBtn').addEventListener('click',()=>{sessionStorage.removeItem(KEYS.auth);location.reload()});
+$('prevBtn').addEventListener('click',()=>{activeCircuit=(activeCircuit-1+program().circuits.length)%program().circuits.length;render()});$('nextBtn').addEventListener('click',()=>{activeCircuit=(activeCircuit+1)%program().circuits.length;render()});$('multiCircuitBtn').addEventListener('click',()=>{multiCircuit=!multiCircuit;document.body.classList.toggle('multi-circuit',multiCircuit);$('multiCircuitBtn').classList.toggle('active',multiCircuit);$('multiCircuitBtn').textContent=multiCircuit?'Single Circuit':'Multi-Circuit';render()});$('menuBtn').addEventListener('click',e=>{$('menu').classList.toggle('open')});document.addEventListener('click',e=>{if(!e.target.closest('.menu-wrap'))$('menu').classList.remove('open')});$('logoutBtn').addEventListener('click',()=>{sessionStorage.removeItem(KEYS.auth);location.reload()});
 
 window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeBuilder();closeWeekly();closeClients();$('menu').classList.remove('open')}});
 }
@@ -464,45 +711,6 @@ function updateHourCounter(d=new Date()){
 }
 function tick(){const d=new Date();$('clock').textContent=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});$('dateLine').textContent=d.toLocaleDateString([], {weekday:'long',month:'short',day:'numeric'});updateHourCounter(d)}
 bind();render();tick();setInterval(tick,1000);
-})();
-</script>
-
-<script>
-/* v52 premium coach dropdown interactions */
-(function(){
-  function bootCoachDropdown(){
-    const btn=document.getElementById('coachSelectBtn');
-    const menu=document.getElementById('coachMenu');
-    const name=document.querySelector('.coach-name');
-    if(!btn||!menu)return;
-    function close(){
-      menu.hidden=true;
-      btn.setAttribute('aria-expanded','false');
-    }
-    function open(){
-      menu.hidden=false;
-      btn.setAttribute('aria-expanded','true');
-    }
-    btn.addEventListener('click',function(event){
-      event.preventDefault();
-      event.stopPropagation();
-      if(menu.hidden) open(); else close();
-    });
-    menu.addEventListener('click',function(event){
-      const item=event.target.closest('[data-coach]');
-      if(!item)return;
-      if(name) name.textContent=item.dataset.coach;
-      close();
-    });
-    document.addEventListener('click',function(event){
-      if(!event.target.closest('#coachCard')) close();
-    });
-    document.addEventListener('keydown',function(event){
-      if(event.key==='Escape') close();
-    });
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bootCoachDropdown);
-  else bootCoachDropdown();
 })();
 </script>
 

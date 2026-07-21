@@ -33,3 +33,24 @@ Upload the contents of this ZIP to the root of the repo. Do not place the files 
 - Buttons, menu buttons, quick actions, tabs, and selects now use high-quality gradient hover states.
 - Hover states include electric-blue/cyan glow, slight lift, and border bloom.
 - Local Board / Workout Builder logic is unchanged from v51.
+
+## v53 Multi-Circuit + Tile Fit
+- Removed the visible Active Coach dropdown card from the workout dashboard.
+- Kept the premium gradient hover animations and button/select polish from v52.
+- Reworked workout tile typography with smart text-size classes so long exercise names fit better.
+- Replaced the old Compact button with a Multi-Circuit button.
+- Multi-Circuit mode displays the current circuit and the next circuit together.
+- Multi-Circuit uses square-style tile groups with two circuits on screen.
+- Local Board / Workout Builder logic remains unchanged from v52.
+
+## v53.1 Circuit Label + Axon Insignia
+- Replaced the top-left AX text mark with the uploaded Axon blue insignia image.
+- Added a prominent active circuit label in the program header.
+- Circuit label updates/pulses whenever Skip Left or Skip Right changes the active circuit.
+- Multi-Circuit mode label shows both displayed circuits.
+
+## v53.2 White SVG Logo Support
+- Replaced the top-left logo asset with the uploaded white Axon insignia SVG.
+- Renamed the uploaded SVG to a Netlify/GitHub-safe filename: assets/axon-insignia-white.svg.
+- Removed the older blue PNG logo asset from this package.
+- Preserved the v53.1 circuit label behavior and Multi-Circuit functionality.
