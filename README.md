@@ -54,3 +54,11 @@ Upload the contents of this ZIP to the root of the repo. Do not place the files 
 - Renamed the uploaded SVG to a Netlify/GitHub-safe filename: assets/axon-insignia-white.svg.
 - Removed the older blue PNG logo asset from this package.
 - Preserved the v53.1 circuit label behavior and Multi-Circuit functionality.
+
+## v53.3 Client Access Directory
+- Rebuilt Client Access popup into a polished client directory matching the reference style.
+- Client profiles show only name, email, and PIN.
+- PINs are editable only while logged into the admin dashboard.
+- Added search, filters, add client, delete client, copy PIN, import TXT/CSV/JSON, and export JSON.
+- Seeded current client profiles from the reference list.
+- Preserved v53.2 white logo, active circuit label, and Multi-Circuit behavior.
