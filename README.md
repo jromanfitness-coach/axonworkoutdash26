@@ -62,3 +62,11 @@ Upload the contents of this ZIP to the root of the repo. Do not place the files 
 - Added search, filters, add client, delete client, copy PIN, import TXT/CSV/JSON, and export JSON.
 - Seeded current client profiles from the reference list.
 - Preserved v53.2 white logo, active circuit label, and Multi-Circuit behavior.
+
+## v53.4 Optimized Client View
+- Rebuilt client.html as a self-contained static client portal.
+- Removed the broken server sync dependency and replaced it with packaged/default board data plus JSON import fallback.
+- Client PIN login works from seeded client records and demo PIN axon26.
+- Client view shows client name/email, week/program/circuit selectors, active circuit label, and workout tiles.
+- Client portal can import a board JSON backup directly if admin wants to update a device manually.
+- This version avoids the “no way to sync” failure because the client page no longer depends on Netlify Functions.

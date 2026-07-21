@@ -1,1 +1,156 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Axon Client Portal</title><style>body{margin:0;font-family:Montserrat,system-ui,sans-serif;background:#05070A;color:#F8F1E3;display:grid;place-items:center;min-height:100vh}.card{width:min(720px,92vw);border:1px solid rgba(99,211,253,.25);border-radius:28px;background:linear-gradient(180deg,#101A26,#07111D);padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.55)}h1{font-size:34px;line-height:.95;letter-spacing:-.05em;text-transform:uppercase;margin:0 0 10px}.muted{color:#A9B4C2;font-weight:700;line-height:1.45}.btn{border:1px solid rgba(99,211,253,.55);background:linear-gradient(135deg,#1F8CFF,#135dbc);color:white;border-radius:999px;padding:12px 16px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-top:14px}</style></head><body><div class="card"><h1>Axon Client Portal</h1><p class="muted">This clean rebuild prioritizes the staff Local Board / Workout Builder. The client portal shell is included so /client does not 404. Shared client sync can be reconnected after the builder is stable.</p><button class="btn" onclick="location.href='/'">Back to Dashboard</button></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Axon Performance Client Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900;1000&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070A;--panel:#07111D;--panel2:#101A26;--blue:#1F8CFF;--cyan:#63D3FD;--sky:#64B4FF;--cream:#F8F1E3;--muted:#A9B4C2;--good:#73D99F;--warn:#FFD360;--bad:#FF6B6B;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:
+radial-gradient(circle at 12% 0%,rgba(99,211,253,.12),transparent 26%),
+radial-gradient(circle at 92% 18%,rgba(31,140,255,.10),transparent 30%),
+linear-gradient(135deg,#05070A,#07111D 48%,#05070A);color:var(--cream);font-family:Montserrat,system-ui,sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(99,211,253,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(99,211,253,.04) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),transparent);pointer-events:none}
+.app{min-height:100vh;padding:clamp(16px,2.2vw,34px);display:grid;gap:18px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;border:1px solid rgba(99,211,253,.18);border-radius:28px;padding:16px 18px;background:rgba(7,17,29,.74);box-shadow:0 24px 70px rgba(0,0,0,.38);backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.mark{width:58px;height:58px;border-radius:20px;border:1px solid rgba(99,211,253,.34);display:grid;place-items:center;background:linear-gradient(145deg,rgba(7,17,29,.82),rgba(3,8,14,.92));box-shadow:0 0 30px rgba(99,211,253,.12)}
+.mark img{width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 0 14px rgba(255,255,255,.22)) drop-shadow(0 0 20px rgba(99,211,253,.28))}
+.kicker{color:var(--cyan);font-size:11px;font-weight:1000;letter-spacing:.24em;text-transform:uppercase}
+h1{margin:2px 0 0;font-size:clamp(28px,4.2vw,64px);line-height:.86;letter-spacing:-.06em;text-transform:uppercase}
+.top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+button,.btn{border:1px solid rgba(99,211,253,.22);border-radius:16px;background:rgba(255,255,255,.06);color:var(--cream);font-family:inherit;font-weight:1000;padding:12px 16px;cursor:pointer;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease}
+button:hover,.btn:hover{transform:translateY(-1px);border-color:rgba(99,211,253,.78);background:linear-gradient(135deg,rgba(31,140,255,.28),rgba(99,211,253,.16),rgba(115,217,159,.10)),rgba(7,17,29,.84);box-shadow:0 18px 48px rgba(31,140,255,.18),0 0 28px rgba(99,211,253,.14);color:#fff}
+.primary{background:linear-gradient(135deg,rgba(31,140,255,.38),rgba(99,211,253,.20));border-color:rgba(99,211,253,.55)}
+.login{width:min(720px,100%);margin:8vh auto 0;border:1px solid rgba(99,211,253,.22);border-radius:32px;padding:28px;background:linear-gradient(145deg,rgba(16,26,38,.94),rgba(3,8,14,.92));box-shadow:0 34px 100px rgba(0,0,0,.62)}
+.login h2{font-size:clamp(32px,4vw,58px);letter-spacing:-.06em;margin:0 0 8px;text-transform:uppercase}
+.login p{color:var(--muted);font-weight:800;margin:0 0 18px;line-height:1.5}
+.login-row{display:grid;grid-template-columns:1fr auto;gap:10px}
+input,select{width:100%;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(3,8,14,.72);color:var(--cream);padding:15px;font:inherit;font-weight:850;outline:none}
+input:focus,select:focus{border-color:rgba(99,211,253,.68);box-shadow:0 0 0 1px rgba(99,211,253,.22),0 16px 40px rgba(31,140,255,.12)}
+.hint{margin-top:12px;color:var(--muted);font-size:12px;font-weight:800}
+.error{color:var(--bad);font-weight:900;margin-top:12px}
+.dashboard{display:none;gap:16px}
+.dashboard.open{display:grid}
+.client-card{border:1px solid rgba(99,211,253,.24);border-radius:28px;padding:20px;background:linear-gradient(145deg,rgba(10,30,51,.88),rgba(3,8,14,.86));box-shadow:0 24px 70px rgba(0,0,0,.34)}
+.client-card h2{margin:0;font-size:clamp(30px,4vw,52px);letter-spacing:-.055em}
+.client-email{color:var(--muted);font-weight:850;margin-top:6px}
+.board-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.program-head{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;border:1px solid rgba(99,211,253,.20);border-radius:26px;padding:18px;background:rgba(7,17,29,.64)}
+.program-title{font-size:clamp(28px,3.8vw,58px);font-weight:1000;line-height:.9;letter-spacing:-.055em;text-transform:uppercase}
+.circuit-label{display:inline-flex;width:max-content;max-width:100%;align-items:center;gap:10px;margin-top:8px;padding:7px 14px;border:1px solid rgba(99,211,253,.36);border-radius:999px;background:linear-gradient(135deg,rgba(31,140,255,.22),rgba(99,211,253,.10),rgba(115,217,159,.06)),rgba(7,17,29,.68);color:#9FD8FF;box-shadow:0 0 26px rgba(31,140,255,.10);font-size:clamp(11px,.9vw,15px);font-weight:1000;letter-spacing:.13em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.circuit-label:before{content:"";width:9px;height:9px;border-radius:999px;background:linear-gradient(135deg,#63D3FD,#73D99F);box-shadow:0 0 16px rgba(99,211,253,.55);flex:0 0 auto}
+.pill{border:1px solid rgba(99,211,253,.18);border-radius:18px;padding:12px 16px;min-width:110px;text-align:center;background:rgba(3,8,14,.48)}
+.pill strong{display:block;font-size:26px;line-height:1}
+.pill span{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:1000;margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tile{position:relative;min-height:190px;border:1px solid rgba(99,211,253,.22);border-radius:28px;padding:24px;background:radial-gradient(circle at 92% 0%,rgba(31,140,255,.18),transparent 38%),linear-gradient(145deg,rgba(10,30,51,.88),rgba(3,8,14,.86));box-shadow:0 22px 50px rgba(0,0,0,.28);display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto 1fr;gap:10px 14px;overflow:hidden}
+.station{color:#9FD8FF;font-size:14px;font-weight:1000;letter-spacing:.15em;text-transform:uppercase}
+.target{grid-column:2;grid-row:1/span 2;align-self:center;min-width:120px;min-height:70px;border:1px solid rgba(99,211,253,.32);border-radius:999px;display:grid;place-items:center;padding:12px 18px;background:linear-gradient(135deg,rgba(31,140,255,.30),rgba(99,211,253,.12));font-size:clamp(26px,3vw,52px);font-weight:1000;white-space:nowrap}
+.exercise{grid-column:1;grid-row:2;align-self:center;font-weight:1000;letter-spacing:-.045em;line-height:.90;font-size:clamp(30px,4vw,72px);text-transform:uppercase}
+.tile.text-xs .exercise{font-size:clamp(22px,2.8vw,50px);letter-spacing:-.03em;line-height:.95}
+.tile.text-sm .exercise{font-size:clamp(26px,3.2vw,58px);letter-spacing:-.035em;line-height:.93}
+.tile.text-md .exercise{font-size:clamp(30px,3.7vw,66px)}
+.tile.text-lg .exercise{font-size:clamp(34px,4.2vw,74px)}
+.empty{border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:22px;color:var(--muted);font-weight:900;background:rgba(255,255,255,.04)}
+.sync-panel{border:1px solid rgba(255,211,96,.32);border-radius:22px;padding:16px;background:rgba(255,211,96,.06);color:var(--muted);font-weight:800;line-height:1.5}
+.sync-panel strong{color:var(--warn)}
+.file-input{display:none}
+@media(max-width:850px){.topbar,.program-head{grid-template-columns:1fr}.board-controls{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.login-row{grid-template-columns:1fr}.target{min-width:92px;font-size:clamp(22px,8vw,42px)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark"><img src="./assets/axon-insignia-white.svg" alt="Axon Performance"></div>
+      <div><div class="kicker">CLIENT PORTAL</div><h1>Workout Access</h1></div>
+    </div>
+    <div class="top-actions">
+      <button id="uploadBtn" type="button">Import Board JSON</button>
+      <button id="logoutBtn" type="button" hidden>Logout</button>
+    </div>
+  </header>
+
+  <section class="login" id="loginPanel">
+    <h2>Client Login</h2>
+    <p>Enter your assigned PIN to open your workout board. This version no longer depends on a server sync function, so it will not fail with a sync error.</p>
+    <div class="login-row">
+      <input id="pinInput" placeholder="Enter PIN" autocomplete="off">
+      <button class="primary" id="loginBtn" type="button">Open Portal</button>
+    </div>
+    <div class="hint">Demo fallback PIN: <strong>axon26</strong>. Admin-created client PINs work after importing/exporting the client directory on the same browser.</div>
+    <div class="error" id="loginError"></div>
+  </section>
+
+  <main class="dashboard" id="dashboard">
+    <section class="client-card">
+      <div class="kicker">SIGNED IN</div>
+      <h2 id="clientName">Client</h2>
+      <div class="client-email" id="clientEmail">No email on record</div>
+    </section>
+
+    <section class="sync-panel" id="syncPanel">
+      <strong>Static client portal:</strong> this page uses the packaged workout board and any JSON imported on this device. It does not require Netlify Functions, so there is no broken sync state.
+    </section>
+
+    <section class="board-controls">
+      <select id="weekSelect"></select>
+      <select id="programSelect"></select>
+      <select id="circuitSelect"></select>
+    </section>
+
+    <section class="program-head">
+      <div>
+        <div class="program-title" id="programTitle">Workout</div>
+        <div class="circuit-label" id="activeCircuitLabel">ACTIVE CIRCUIT</div>
+      </div>
+      <div class="pill"><strong id="roundsValue">3</strong><span>Rounds</span></div>
+      <div class="pill"><strong id="movesValue">0</strong><span>Moves</span></div>
+    </section>
+
+    <section class="grid" id="stationGrid"></section>
+  </main>
+</div>
+<input class="file-input" id="jsonImport" type="file" accept=".json,application/json">
+<script>
+const DEFAULT_BOARD={"version":534,"brand":"AXON PERFORMANCE TRAINING DISPLAY","heading":"Weekly Class Board","footerLeft":"Train • Recover • Perform","footerRight":"Your Health & Fitness Connection","weeks":[{"week":"June Week 2","summary":"Lower strength, athletic intervals, and endurance capacity.","display":"HIIT","programs":[{"name":"Forge","mode":"strength","desc":"Build muscle • controlled strength work","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Lower Strength","stations":[{"exercise":"Split Squats","prescription":"8ea","note":"slow tempo"},{"exercise":"DB RDL","prescription":"10","note":"hinge & stretch"},{"exercise":"Push Ups","prescription":"12","note":"full range"},{"exercise":"Plank Pull-Through","prescription":"10ea","note":"brace"},{"exercise":"Cable Row","prescription":"12","note":"squeeze"}]},{"name":"B - Upper Pump","stations":[{"exercise":"Incline DB Press","prescription":"10","note":"controlled"},{"exercise":"Seated Row","prescription":"12","note":"squeeze back"},{"exercise":"Lateral Raise","prescription":"15","note":"no swing"},{"exercise":"Curl to Press","prescription":"10","note":"smooth reps"}]},{"name":"Finisher","stations":[{"exercise":"Farmer Carry","prescription":"40 yd","note":"heavy walk"},{"exercise":"Wall Sit","prescription":"45 sec","note":"hold strong"}]}]},{"name":"HIIT","mode":"timed","desc":"Burn fat & calories • athletic intervals","rounds":4,"work":40,"rest":20,"circuits":[{"name":"A - Conditioning Block","stations":[{"exercise":"Bike Sprint","prescription":"40 sec","note":"hard pace"},{"exercise":"KB Swings","prescription":"15","note":"power hips"},{"exercise":"Reverse Lunges","prescription":"10ea","note":"steady"},{"exercise":"Mountain Climbers","prescription":"30 sec","note":"fast feet"},{"exercise":"Battle Ropes","prescription":"30 sec","note":"big waves"},{"exercise":"Plank Jacks","prescription":"30 sec","note":"hips low"}]},{"name":"B - Core & Burn","stations":[{"exercise":"Med Ball Slams","prescription":"12","note":"explode"},{"exercise":"Sled Push","prescription":"20 yd","note":"drive knees"},{"exercise":"TRX Row","prescription":"12","note":"tight body"},{"exercise":"Dead Bug","prescription":"10ea","note":"control"}]},{"name":"Finisher","stations":[{"exercise":"Burpee Step-Back","prescription":"45 sec","note":"consistent"},{"exercise":"Rest","prescription":"30 sec","note":"breathe"}]}]},{"name":"Ignite","mode":"timed","desc":"Intense calorie burn • endurance capacity","rounds":4,"work":50,"rest":10,"circuits":[{"name":"A - Engine Builder","stations":[{"exercise":"Row Erg","prescription":"50 sec","note":"hold pace"},{"exercise":"Step Ups","prescription":"12ea","note":"drive tall"},{"exercise":"Battle Ropes","prescription":"40 sec","note":"big waves"},{"exercise":"Burpee Step-Back","prescription":"10","note":"consistent"},{"exercise":"Bear Crawl","prescription":"20 yd","note":"stay low"}]}]},{"name":"Semi Private 1","mode":"strength","desc":"Strength coaching • small group progression","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Main Lift Prep","stations":[{"exercise":"Goblet Squat","prescription":"8","note":"own depth"},{"exercise":"Half-Kneeling Press","prescription":"8ea","note":"ribs down"},{"exercise":"Cable Row","prescription":"10","note":"pause"},{"exercise":"Pallof Press","prescription":"10ea","note":"anti-rotate"}]}]},{"name":"Semi Private 2","mode":"strength","desc":"Corrective strength • mobility + muscle","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Movement Quality","stations":[{"exercise":"Trap Bar Deadlift","prescription":"6","note":"strong setup"},{"exercise":"Chest-Supported Row","prescription":"10","note":"squeeze"},{"exercise":"Rear-Foot Split Squat","prescription":"8ea","note":"balance"},{"exercise":"Side Plank","prescription":"30 sec","note":"stack hips"}]}]}]},{"week":"June Week 3","summary":"Posterior chain strength, faster transitions, and longer Ignite intervals.","display":"Ignite","programs":[{"name":"Forge","mode":"strength","desc":"Build muscle • posterior chain emphasis","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Strength Base","stations":[{"exercise":"Trap Bar Deadlift","prescription":"6","note":"strong brace"},{"exercise":"DB Bench Press","prescription":"10","note":"full range"},{"exercise":"Walking Lunge","prescription":"10ea","note":"tall posture"},{"exercise":"Side Plank Row","prescription":"8ea","note":"stay square"}]}]},{"name":"HIIT","mode":"timed","desc":"Burn fat & calories • fast transitions","rounds":4,"work":45,"rest":15,"circuits":[{"name":"A - Speed Block","stations":[{"exercise":"Ski Erg","prescription":"45 sec","note":"strong pulls"},{"exercise":"DB Thruster","prescription":"10","note":"full lockout"},{"exercise":"Lateral Shuffle","prescription":"30 sec","note":"quick feet"},{"exercise":"Plank Jack","prescription":"30 sec","note":"hips low"},{"exercise":"Rower Sprint","prescription":"60 sec","note":"empty tank"}]}]},{"name":"Ignite","mode":"timed","desc":"Intense calorie burn • longer endurance intervals","rounds":4,"work":60,"rest":15,"circuits":[{"name":"A - Engine","stations":[{"exercise":"Bike","prescription":"60 sec","note":"hold pace"},{"exercise":"Step Ups","prescription":"14ea","note":"consistent"},{"exercise":"Battle Ropes","prescription":"45 sec","note":"big waves"},{"exercise":"Bear Crawl","prescription":"25 yd","note":"steady"},{"exercise":"Sled Push","prescription":"30 yd","note":"drive hard"},{"exercise":"Med Ball Slam","prescription":"15","note":"explode"}]}]}]},{"week":"July Week 1","summary":"Full-body foundation, upper hypertrophy, and low-impact conditioning.","display":"Forge","programs":[{"name":"Full Body Foundation","mode":"strength","desc":"Balanced strength base • controlled movement quality","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Foundation Strength","stations":[{"exercise":"Goblet Squat","prescription":"10","note":"own depth"},{"exercise":"Push Up","prescription":"10","note":"full range"},{"exercise":"Cable Row","prescription":"12","note":"pause & squeeze"},{"exercise":"DB RDL","prescription":"10","note":"slow hinge"}]},{"name":"B - Core + Carry","stations":[{"exercise":"Pallof Press","prescription":"10ea","note":"anti-rotate"},{"exercise":"Dead Bug","prescription":"10ea","note":"control"},{"exercise":"Farmer Carry","prescription":"40 yd","note":"walk tall"}]}]},{"name":"Upper Hypertrophy","mode":"strength","desc":"Upper-body muscle building • clean tempo and volume","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Press + Pull","stations":[{"exercise":"Incline DB Press","prescription":"10","note":"controlled"},{"exercise":"Seated Row","prescription":"12","note":"squeeze back"},{"exercise":"Half-Kneeling Press","prescription":"8ea","note":"ribs down"},{"exercise":"Lat Pulldown","prescription":"12","note":"elbows drive"}]},{"name":"B - Shoulder + Arm Pump","stations":[{"exercise":"Lateral Raise","prescription":"15","note":"no swing"},{"exercise":"Triceps Pressdown","prescription":"12","note":"lockout"},{"exercise":"DB Curl","prescription":"12","note":"smooth reps"}]}]},{"name":"Low-Impact Conditioning","mode":"timed","desc":"Conditioning without joint pounding • steady burn","rounds":4,"work":40,"rest":20,"circuits":[{"name":"A - Low Impact Engine","stations":[{"exercise":"Bike","prescription":"40 sec","note":"steady push"},{"exercise":"Step Ups","prescription":"10ea","note":"drive tall"},{"exercise":"Med Ball Slam","prescription":"12","note":"explode"},{"exercise":"TRX Row","prescription":"12","note":"tight body"}]},{"name":"B - Core Finish","stations":[{"exercise":"Sled Push","prescription":"20 yd","note":"drive knees"},{"exercise":"Dead Bug","prescription":"10ea","note":"control"},{"exercise":"Plank","prescription":"40 sec","note":"brace"}]}]}]},{"week":"July Week 2","summary":"Lower strength, conditioning, and semi-private movement quality.","display":"HIIT","programs":[{"name":"Forge — Lower Strength","mode":"strength","desc":"Lower-body strength • hinge, row, carry","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Lower Strength","stations":[{"exercise":"Split Squat","prescription":"8 each","note":"own depth and keep torso tall"},{"exercise":"DB RDL","prescription":"10","note":"hinge slowly"},{"exercise":"Cable Row","prescription":"12","note":"pause and squeeze"},{"exercise":"Farmer Carry","prescription":"2 laps","note":"walk tall and brace"}]}]},{"name":"HIIT — Conditioning","mode":"timed","desc":"Athletic conditioning • high output intervals","rounds":4,"work":40,"rest":20,"circuits":[{"name":"A - Conditioning","stations":[{"exercise":"Bike Sprint","prescription":"40 sec","note":"hard pace"},{"exercise":"KB Swing","prescription":"15","note":"power from hips"},{"exercise":"Battle Ropes","prescription":"30 sec","note":"big waves"},{"exercise":"Sled Push","prescription":"20 yd","note":"drive knees through"}]}]},{"name":"Semi-Private — Movement Quality","mode":"strength","desc":"Movement quality • strength coaching and control","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Movement Quality","stations":[{"exercise":"Trap Bar Deadlift","prescription":"6","note":"strong setup"},{"exercise":"Chest-Supported Row","prescription":"10","note":"full squeeze"},{"exercise":"Rear-Foot Split Squat","prescription":"8 each","note":"controlled balance"},{"exercise":"Side Plank","prescription":"30 sec","note":"stack hips"}]}]}]},{"week":"July Week 3","summary":"Upper strength, athletic conditioning, and core/carry emphasis.","display":"Athletic Conditioning","programs":[{"name":"Upper Strength","mode":"strength","desc":"Upper-body strength • press, pull, and trunk control","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Upper Strength","stations":[{"exercise":"DB Bench Press","prescription":"8","note":"full range"},{"exercise":"Lat Pulldown","prescription":"10","note":"elbows drive"},{"exercise":"Half-Kneeling Press","prescription":"8ea","note":"ribs down"},{"exercise":"Cable Row","prescription":"12","note":"pause & squeeze"}]},{"name":"B - Upper Finish","stations":[{"exercise":"Push Up","prescription":"AMRAP","note":"clean reps"},{"exercise":"Face Pull","prescription":"15","note":"shoulders back"},{"exercise":"Farmer Carry","prescription":"40 yd","note":"brace"}]}]},{"name":"Athletic Conditioning","mode":"timed","desc":"Speed, power, and work capacity","rounds":4,"work":45,"rest":15,"circuits":[{"name":"A - Athletic Engine","stations":[{"exercise":"Ski Erg","prescription":"45 sec","note":"strong pulls"},{"exercise":"DB Thruster","prescription":"10","note":"full lockout"},{"exercise":"Lateral Shuffle","prescription":"30 sec","note":"quick feet"},{"exercise":"Rower Sprint","prescription":"45 sec","note":"empty tank"}]},{"name":"B - Power Finish","stations":[{"exercise":"Battle Ropes","prescription":"30 sec","note":"big waves"},{"exercise":"Bear Crawl","prescription":"20 yd","note":"stay low"},{"exercise":"Med Ball Slam","prescription":"12","note":"explode"}]}]},{"name":"Core + Carry","mode":"strength","desc":"Trunk strength • loaded carries and anti-rotation","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Core Stability","stations":[{"exercise":"Suitcase Carry","prescription":"30 yd ea","note":"stay tall"},{"exercise":"Dead Bug","prescription":"10ea","note":"control"},{"exercise":"Pallof Press","prescription":"12ea","note":"anti-rotate"},{"exercise":"Plank Pull-Through","prescription":"10ea","note":"brace"}]},{"name":"B - Carry Finish","stations":[{"exercise":"Sled Drag","prescription":"30 yd","note":"steady pull"},{"exercise":"Farmer Carry","prescription":"40 yd","note":"heavy walk"},{"exercise":"Side Plank","prescription":"30 sec ea","note":"stack hips"}]}]}]}]};
+const DEFAULT_CLIENTS=[{"name":"Andrew H","email":"awharnage@gmail.com","pin":"AH101"},{"name":"Austin B","email":"aussiebossy4190@gmail.com","pin":"AB102"},{"name":"Brantley B","email":"brantley.barrentine@gmail.com","pin":"BB103"},{"name":"Brittaney S","email":"brittaneyschwing@gmail.com","pin":"BS104"},{"name":"Buck W","email":"jgwhite2509@gmail.com","pin":"BW105"},{"name":"Cadie B","email":"cadieball@gmail.com","pin":"CB106"},{"name":"Denzell G","email":"megacowdy@gmail.com","pin":"DG107"},{"name":"Dylan W","email":"dylanwindom229@gmail.com","pin":"DW108"},{"name":"Hudson F","email":"jamieb6@hotmail.com","pin":"HF109"},{"name":"Jill R","email":"","pin":"JR110"},{"name":"Levi H","email":"levihicks142@gmail.com","pin":"LH111"},{"name":"Lindsay M","email":"lgmcdonald13@gmail.com","pin":"LM112"},{"name":"Mariana J","email":"","pin":"MJ113"},{"name":"Marshal M","email":"marsel88.mm@gmail.com","pin":"MM114"},{"name":"Teresa C","email":"tconner@theconnergroup.org","pin":"TC115"},{"name":"Demo Client","email":"demo@axonperformance.fit","pin":"axon26"}];
+const KEYS={board:'axonClientPortalBoardV534',clients:'axonWorkoutDashboardV50Clients',session:'axonClientPortalSessionV534'};
+const $=id=>document.getElementById(id);
+let board=loadBoard(), client=null, activeWeek=0, activeProgram=0, activeCircuit=0;
+function loadBoard(){try{const raw=localStorage.getItem(KEYS.board);if(raw)return JSON.parse(raw)}catch(e){}return DEFAULT_BOARD}
+function saveBoard(b){board=b;try{localStorage.setItem(KEYS.board,JSON.stringify(b))}catch(e){}}
+function clients(){try{const raw=localStorage.getItem(KEYS.clients);if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed)&&parsed.length)return parsed}}catch(e){}return DEFAULT_CLIENTS}
+function normalizeBoard(payload){return payload&&payload.data?payload.data:(payload&&payload.board?payload.board:payload)}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function tileClass(text){const len=String(text||'').trim().length;if(len>26)return 'text-xs';if(len>20)return 'text-sm';if(len>14)return 'text-md';if(len>8)return 'text-lg';return 'text-xl'}
+function safeIndex(){const weeks=board.weeks||[];activeWeek=Math.max(0,Math.min(activeWeek,weeks.length-1));const programs=(weeks[activeWeek]&&weeks[activeWeek].programs)||[];activeProgram=Math.max(0,Math.min(activeProgram,programs.length-1));const circuits=(programs[activeProgram]&&programs[activeProgram].circuits)||[];activeCircuit=Math.max(0,Math.min(activeCircuit,circuits.length-1))}
+function week(){safeIndex();return (board.weeks||[])[activeWeek]||{week:'No Week',programs:[]}}
+function program(){return (week().programs||[])[activeProgram]||{name:'No Program',circuits:[]}}
+function circuit(){return (program().circuits||[])[activeCircuit]||{name:'No Circuit',stations:[]}}
+function fillSelect(el,items,labelFn,value){el.innerHTML=items.map((x,i)=>`<option value="${i}" ${i===value?'selected':''}>${escapeHtml(labelFn(x,i))}</option>`).join('')}
+function renderSelects(){fillSelect($('weekSelect'),board.weeks||[],w=>w.week||'Week',activeWeek);fillSelect($('programSelect'),week().programs||[],p=>p.name||'Workout',activeProgram);fillSelect($('circuitSelect'),program().circuits||[],c=>c.name||'Circuit',activeCircuit)}
+function renderProgram(){const p=program(),c=circuit(),list=c.stations||[];$('programTitle').textContent=p.name||'Workout';$('activeCircuitLabel').textContent='ACTIVE CIRCUIT · '+(c.name||'Circuit');$('roundsValue').textContent=p.rounds||3;$('movesValue').textContent=list.length}
+function renderTiles(){const list=circuit().stations||[];$('stationGrid').innerHTML=list.map((s,i)=>`<article class="tile ${tileClass(s.exercise)}"><div class="station">Station ${i+1}</div><div class="target">${escapeHtml(s.prescription||'Work')}</div><div class="exercise">${escapeHtml(s.exercise||'Exercise')}</div></article>`).join('')||'<div class="empty">No exercises available for this circuit.</div>'}
+function render(){safeIndex();renderSelects();renderProgram();renderTiles()}
+function login(){const pin=$('pinInput').value.trim();const found=clients().find(c=>String(c.pin||'').toLowerCase()===pin.toLowerCase())||((pin.toLowerCase()==='axon26')?{name:'Demo Client',email:'demo@axonperformance.fit',pin:'axon26'}:null);if(!found){$('loginError').textContent='PIN not found. Ask the admin to verify your PIN.';return}client=found;try{sessionStorage.setItem(KEYS.session,JSON.stringify(found))}catch(e){}$('loginPanel').style.display='none';$('dashboard').classList.add('open');$('logoutBtn').hidden=false;$('clientName').textContent=found.name||'Client';$('clientEmail').textContent=found.email||'No email on record';render()}
+function logout(){try{sessionStorage.removeItem(KEYS.session)}catch(e){}location.reload()}
+function importJson(file){const reader=new FileReader();reader.onload=()=>{try{const payload=normalizeBoard(JSON.parse(String(reader.result||'{}')));if(!payload||!Array.isArray(payload.weeks))throw new Error('JSON does not contain weeks.');saveBoard(payload);render();$('syncPanel').innerHTML='<strong>Board imported:</strong> this client view is using the latest JSON imported on this device.'}catch(err){alert('Could not import board JSON: '+(err.message||err));}};reader.readAsText(file)}
+$('loginBtn').addEventListener('click',login);$('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+$('logoutBtn').addEventListener('click',logout);
+$('weekSelect').addEventListener('change',e=>{activeWeek=Number(e.target.value);activeProgram=0;activeCircuit=0;render()});
+$('programSelect').addEventListener('change',e=>{activeProgram=Number(e.target.value);activeCircuit=0;render()});
+$('circuitSelect').addEventListener('change',e=>{activeCircuit=Number(e.target.value);render()});
+$('uploadBtn').addEventListener('click',()=>$('jsonImport').click());
+$('jsonImport').addEventListener('change',e=>{if(e.target.files[0])importJson(e.target.files[0]);e.target.value=''});
+try{const saved=JSON.parse(sessionStorage.getItem(KEYS.session)||'null');if(saved){$('pinInput').value=saved.pin||'';login()}}catch(e){}
+</script>
+</body>
+</html>
