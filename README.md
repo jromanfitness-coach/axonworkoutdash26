@@ -70,3 +70,12 @@ Upload the contents of this ZIP to the root of the repo. Do not place the files 
 - Client view shows client name/email, week/program/circuit selectors, active circuit label, and workout tiles.
 - Client portal can import a board JSON backup directly if admin wants to update a device manually.
 - This version avoids the “no way to sync” failure because the client page no longer depends on Netlify Functions.
+
+## v53.5 Multi-Coach Access + Admin Coach Management
+- Added multi-coach login using username + PIN.
+- Admin1999 / jaxroman remains the master admin login.
+- Added a Coaches Management button that appears only for Admin1999.
+- Admin can create coaches, set their username/PIN, lock/unlock them, delete them, and edit button permissions.
+- Permission controls include Local Board, Clients, Weekly, Export, Multi-Circuit, and Skip controls.
+- Coaches can update the Local Board and use all enabled dashboard functions.
+- Client PIN editing remains admin-only.
