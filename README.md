@@ -79,3 +79,10 @@ Upload the contents of this ZIP to the root of the repo. Do not place the files 
 - Permission controls include Local Board, Clients, Weekly, Export, Multi-Circuit, and Skip controls.
 - Coaches can update the Local Board and use all enabled dashboard functions.
 - Client PIN editing remains admin-only.
+
+## v53.6 Coach Management Visibility Fix
+- Fixed the coach add/edit cards not appearing after adding a coach.
+- Root cause: the new coach management cards reused the old `.coach-card` class, which was still hidden by the removed Active Coach dropdown CSS.
+- Renamed management cards to `.coach-account-card` and forced visibility inside the Coaches Management popup.
+- Added clearer status messages when adding, saving, locking, activating, or deleting coaches.
+- Admin1999 can now add a coach and immediately see/edit that coach's username, PIN, and permissions.
