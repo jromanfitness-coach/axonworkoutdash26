@@ -102,11 +102,10 @@ Deploy notes:
 - Publish directory: .
 - No BLOBS_SITE_ID or BLOBS_ACCESS_TOKEN env vars are needed for normal Netlify Blobs usage.
 
-
-## v53.8 Installed Uploaded Workouts
-- Installed `axon-workout-dashboard-backup.json` as the default board in the admin dashboard.
-- Embedded the uploaded board into the server-board Netlify Function default state.
-- Server default now includes: 11 weeks, 35 programs, 81 circuits, 278 stations.
-- Added `assets/installed-workout-board-v53-8.json` as a packaged backup copy.
-- Local browsers with older v53.7 board records will automatically load this v53.8 installed board unless their saved board version is already v53.8 or newer.
-- After deploy, use Server Sync → Publish Board + Coaches + Clients to update the live shared server copy if an old server blob already exists.
+## v53.9 Server Save 502 Fix
+- Rebuilt `netlify/functions/server-board.js` to avoid raw 502 crashes.
+- Switched to a defensive lazy `@netlify/blobs` import so dependency/runtime problems return a readable JSON error.
+- Updated Netlify Blobs usage to the stable `getStore("axon-server-board")` call.
+- Added a Test Server button inside Server Sync.
+- Removed stale `package-lock.json` so Netlify installs a fresh compatible dependency tree.
+- Keeps the v53.8 installed workout board and server-sync UI.

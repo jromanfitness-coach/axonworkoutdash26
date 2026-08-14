@@ -1,90 +1,184 @@
-const { getStore } = require('@netlify/blobs');
-
-const DEFAULT_BOARD = {"schema":"axon.workoutBoard.v1","source":"v49 TXT export converted to JSON with July workouts added | installed into v53.8 server-sync build","brand":"AXON PERFORMANCE TRAINING DISPLAY","heading":"Weekly Class Board","footerLeft":"Train • Recover • Perform","footerRight":"Your Health & Fitness Connection","weeks":[{"week":"June Week 2","summary":"Lower strength, athletic intervals, and endurance capacity.","display":"HIIT","programs":[{"name":"Forge","mode":"strength","desc":"Build muscle • controlled strength work","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Lower Strength","stations":[{"exercise":"Split Squats","prescription":"8ea","note":"slow tempo"},{"exercise":"DB RDL","prescription":"10","note":"hinge & stretch"},{"exercise":"Push Ups","prescription":"12","note":"full range"},{"exercise":"Plank Pull-Through","prescription":"10ea","note":"brace"},{"exercise":"Cable Row","prescription":"12","note":"squeeze"}]},{"name":"B - Upper Pump","stations":[{"exercise":"Incline DB Press","prescription":"10","note":"controlled"},{"exercise":"Seated Row","prescription":"12","note":"squeeze back"},{"exercise":"Lateral Raise","prescription":"15","note":"no swing"},{"exercise":"Curl to Press","prescription":"10","note":"smooth reps"}]},{"name":"Finisher","stations":[{"exercise":"Farmer Carry","prescription":"40 yd","note":"heavy walk"},{"exercise":"Wall Sit","prescription":"45 sec","note":"hold strong"}]}]},{"name":"HIIT","mode":"timed","desc":"Burn fat & calories • athletic intervals","rounds":4,"work":40,"rest":20,"circuits":[{"name":"A - Conditioning Block","stations":[{"exercise":"Bike Sprint","prescription":"40 sec","note":"hard pace"},{"exercise":"KB Swings","prescription":"15","note":"power hips"},{"exercise":"Reverse Lunges","prescription":"10ea","note":"steady"},{"exercise":"Mountain Climbers","prescription":"30 sec","note":"fast feet"},{"exercise":"Battle Ropes","prescription":"30 sec","note":"big waves"},{"exercise":"Plank Jacks","prescription":"30 sec","note":"hips low"}]},{"name":"B - Core & Burn","stations":[{"exercise":"Med Ball Slams","prescription":"12","note":"explode"},{"exercise":"Sled Push","prescription":"20 yd","note":"drive knees"},{"exercise":"TRX Row","prescription":"12","note":"tight body"},{"exercise":"Dead Bug","prescription":"10ea","note":"control"}]},{"name":"Finisher","stations":[{"exercise":"Burpee Step-Back","prescription":"45 sec","note":"consistent"},{"exercise":"Rest","prescription":"30 sec","note":"breathe"}]}]},{"name":"Ignite","mode":"timed","desc":"Intense calorie burn • endurance capacity","rounds":4,"work":50,"rest":10,"circuits":[{"name":"A - Engine Builder","stations":[{"exercise":"Row Erg","prescription":"50 sec","note":"hold pace"},{"exercise":"Step Ups","prescription":"12ea","note":"drive tall"},{"exercise":"Battle Ropes","prescription":"40 sec","note":"big waves"},{"exercise":"Burpee Step-Back","prescription":"10","note":"consistent"},{"exercise":"Bear Crawl","prescription":"20 yd","note":"stay low"}]}]},{"name":"Semi Private 1","mode":"strength","desc":"Strength coaching • small group progression","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Main Lift Prep","stations":[{"exercise":"Goblet Squat","prescription":"8","note":"own depth"},{"exercise":"Half-Kneeling Press","prescription":"8ea","note":"ribs down"},{"exercise":"Cable Row","prescription":"10","note":"pause"},{"exercise":"Pallof Press","prescription":"10ea","note":"anti-rotate"}]}]},{"name":"Semi Private 2","mode":"strength","desc":"Corrective strength • mobility + muscle","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Movement Quality","stations":[{"exercise":"Trap Bar Deadlift","prescription":"6","note":"strong setup"},{"exercise":"Chest-Supported Row","prescription":"10","note":"squeeze"},{"exercise":"Rear-Foot Split Squat","prescription":"8ea","note":"balance"},{"exercise":"Side Plank","prescription":"30 sec","note":"stack hips"}]}]}]},{"week":"June Week 3","summary":"Posterior chain strength, faster transitions, and longer Ignite intervals.","display":"Ignite","programs":[{"name":"Forge","mode":"strength","desc":"Build muscle • posterior chain emphasis","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Strength Base","stations":[{"exercise":"Trap Bar Deadlift","prescription":"6","note":"strong brace"},{"exercise":"DB Bench Press","prescription":"10","note":"full range"},{"exercise":"Walking Lunge","prescription":"10ea","note":"tall posture"},{"exercise":"Side Plank Row","prescription":"8ea","note":"stay square"}]}]},{"name":"HIIT","mode":"timed","desc":"Burn fat & calories • fast transitions","rounds":4,"work":45,"rest":15,"circuits":[{"name":"A - Speed Block","stations":[{"exercise":"Ski Erg","prescription":"45 sec","note":"strong pulls"},{"exercise":"DB Thruster","prescription":"10","note":"full lockout"},{"exercise":"Lateral Shuffle","prescription":"30 sec","note":"quick feet"},{"exercise":"Plank Jack","prescription":"30 sec","note":"hips low"},{"exercise":"Rower Sprint","prescription":"60 sec","note":"empty tank"}]}]},{"name":"Ignite","mode":"timed","desc":"Intense calorie burn • longer endurance intervals","rounds":4,"work":60,"rest":15,"circuits":[{"name":"A - Engine","stations":[{"exercise":"Bike","prescription":"60 sec","note":"hold pace"},{"exercise":"Step Ups","prescription":"14ea","note":"consistent"},{"exercise":"Battle Ropes","prescription":"45 sec","note":"big waves"},{"exercise":"Bear Crawl","prescription":"25 yd","note":"steady"},{"exercise":"Sled Push","prescription":"30 yd","note":"drive hard"},{"exercise":"Med Ball Slam","prescription":"15","note":"explode"}]}]}]},{"week":"July Week 1","summary":"Full-body foundation, upper hypertrophy, and low-impact conditioning.","display":"Forge","programs":[{"name":"Full Body Foundation","mode":"strength","desc":"Balanced strength base • controlled movement quality","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Foundation Strength","stations":[{"exercise":"Goblet Squat","prescription":"10","note":"own depth"},{"exercise":"Push Up","prescription":"10","note":"full range"},{"exercise":"Cable Row","prescription":"12","note":"pause & squeeze"},{"exercise":"DB RDL","prescription":"10","note":"slow hinge"}]},{"name":"B - Core + Carry","stations":[{"exercise":"Pallof Press","prescription":"10ea","note":"anti-rotate"},{"exercise":"Dead Bug","prescription":"10ea","note":"control"},{"exercise":"Farmer Carry","prescription":"40 yd","note":"walk tall"}]}]},{"name":"Upper Hypertrophy","mode":"strength","desc":"Upper-body muscle building • clean tempo and volume","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Press + Pull","stations":[{"exercise":"Incline DB Press","prescription":"10","note":"controlled"},{"exercise":"Seated Row","prescription":"12","note":"squeeze back"},{"exercise":"Half-Kneeling Press","prescription":"8ea","note":"ribs down"},{"exercise":"Lat Pulldown","prescription":"12","note":"elbows drive"}]},{"name":"B - Shoulder + Arm Pump","stations":[{"exercise":"Lateral Raise","prescription":"15","note":"no swing"},{"exercise":"Triceps Pressdown","prescription":"12","note":"lockout"},{"exercise":"DB Curl","prescription":"12","note":"smooth reps"}]}]},{"name":"Low-Impact Conditioning","mode":"timed","desc":"Conditioning without joint pounding • steady burn","rounds":4,"work":40,"rest":20,"circuits":[{"name":"A - Low Impact Engine","stations":[{"exercise":"Bike","prescription":"40 sec","note":"steady push"},{"exercise":"Step Ups","prescription":"10ea","note":"drive tall"},{"exercise":"Med Ball Slam","prescription":"12","note":"explode"},{"exercise":"TRX Row","prescription":"12","note":"tight body"}]},{"name":"B - Core Finish","stations":[{"exercise":"Sled Push","prescription":"20 yd","note":"drive knees"},{"exercise":"Dead Bug","prescription":"10ea","note":"control"},{"exercise":"Plank","prescription":"40 sec","note":"brace"}]}]}]},{"week":"July Week 2","summary":"Lower strength, conditioning, and semi-private movement quality.","display":"HIIT","programs":[{"name":"Forge — Lower Strength","mode":"strength","desc":"Lower-body strength • hinge, row, carry","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Lower Strength","stations":[{"exercise":"Split Squat","prescription":"8 each","note":"own depth and keep torso tall"},{"exercise":"DB RDL","prescription":"10","note":"hinge slowly"},{"exercise":"Cable Row","prescription":"12","note":"pause and squeeze"},{"exercise":"Farmer Carry","prescription":"2 laps","note":"walk tall and brace"}]}]},{"name":"HIIT — Conditioning","mode":"timed","desc":"Athletic conditioning • high output intervals","rounds":4,"work":40,"rest":20,"circuits":[{"name":"A - Conditioning","stations":[{"exercise":"Bike Sprint","prescription":"40 sec","note":"hard pace"},{"exercise":"KB Swing","prescription":"15","note":"power from hips"},{"exercise":"Battle Ropes","prescription":"30 sec","note":"big waves"},{"exercise":"Sled Push","prescription":"20 yd","note":"drive knees through"}]}]},{"name":"Semi-Private — Movement Quality","mode":"strength","desc":"Movement quality • strength coaching and control","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Movement Quality","stations":[{"exercise":"Trap Bar Deadlift","prescription":"6","note":"strong setup"},{"exercise":"Chest-Supported Row","prescription":"10","note":"full squeeze"},{"exercise":"Rear-Foot Split Squat","prescription":"8 each","note":"controlled balance"},{"exercise":"Side Plank","prescription":"30 sec","note":"stack hips"}]}]}]},{"week":"July Week 3","summary":"Upper strength, athletic conditioning, and core/carry emphasis.","display":"Athletic Conditioning","programs":[{"name":"Upper Strength","mode":"strength","desc":"Upper-body strength • press, pull, and trunk control","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Upper Strength","stations":[{"exercise":"DB Bench Press","prescription":"8","note":"full range"},{"exercise":"Lat Pulldown","prescription":"10","note":"elbows drive"},{"exercise":"Half-Kneeling Press","prescription":"8ea","note":"ribs down"},{"exercise":"Cable Row","prescription":"12","note":"pause & squeeze"}]},{"name":"B - Upper Finish","stations":[{"exercise":"Push Up","prescription":"AMRAP","note":"clean reps"},{"exercise":"Face Pull","prescription":"15","note":"shoulders back"},{"exercise":"Farmer Carry","prescription":"40 yd","note":"brace"}]}]},{"name":"Athletic Conditioning","mode":"timed","desc":"Speed, power, and work capacity","rounds":4,"work":45,"rest":15,"circuits":[{"name":"A - Athletic Engine","stations":[{"exercise":"Ski Erg","prescription":"45 sec","note":"strong pulls"},{"exercise":"DB Thruster","prescription":"10","note":"full lockout"},{"exercise":"Lateral Shuffle","prescription":"30 sec","note":"quick feet"},{"exercise":"Rower Sprint","prescription":"45 sec","note":"empty tank"}]},{"name":"B - Power Finish","stations":[{"exercise":"Battle Ropes","prescription":"30 sec","note":"big waves"},{"exercise":"Bear Crawl","prescription":"20 yd","note":"stay low"},{"exercise":"Med Ball Slam","prescription":"12","note":"explode"}]}]},{"name":"Core + Carry","mode":"strength","desc":"Trunk strength • loaded carries and anti-rotation","rounds":3,"work":0,"rest":0,"circuits":[{"name":"A - Core Stability","stations":[{"exercise":"Suitcase Carry","prescription":"30 yd ea","note":"stay tall"},{"exercise":"Dead Bug","prescription":"10ea","note":"control"},{"exercise":"Pallof Press","prescription":"12ea","note":"anti-rotate"},{"exercise":"Plank Pull-Through","prescription":"10ea","note":"brace"}]},{"name":"B - Carry Finish","stations":[{"exercise":"Sled Drag","prescription":"30 yd","note":"steady pull"},{"exercise":"Farmer Carry","prescription":"40 yd","note":"heavy walk"},{"exercise":"Side Plank","prescription":"30 sec ea","note":"stack hips"}]}]}]},{"week":"July 20th","summary":"","programs":[{"name":"1on1 A","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit A - 3RNDS","stations":[{"exercise":"SL RDL","prescription":"8ea","note":""},{"exercise":"Forearm Twists","prescription":"6-8","note":""},{"exercise":"SA KB Swing","prescription":"10ea","note":""}]},{"name":"Circuit B - 3RNDS","stations":[{"exercise":"Cross Body Curls","prescription":"8ea","note":""},{"exercise":"Calf Raise","prescription":"8-10","note":""},{"exercise":"Smith OH Press","prescription":"8-10","note":""}]},{"name":"Circuit C - 2RNDS","stations":[{"exercise":"sh. tap plank pull thru","prescription":"30sec","note":""},{"exercise":"ball slams","prescription":"30sec","note":""}]},{"name":"Circuit D - Cooldown","stations":[{"exercise":"1 Big Lap","prescription":"","note":""}]}]},{"name":"Semiprivate 1","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"RDL ROW","prescription":"8-10","note":""},{"exercise":"Forearm Twists","prescription":"5","note":""},{"exercise":"Cross Body Curls","prescription":"8-10ea","note":""},{"exercise":"Banded SL Bike Crunch","prescription":"8-10ea","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"rev fly machine","prescription":"10, 8, 6-8","note":""},{"exercise":"ball slams","prescription":"12","note":""},{"exercise":"Concentration Curl","prescription":"8-10ea","note":""},{"exercise":"Lap (cardio burst)","prescription":"","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"Hollow-Suitcase Crunches","prescription":"10","note":"3-5sec Hollow hold"},{"exercise":"Deadbugs","prescription":"10ea","note":""}]}]},{"name":"HIIT B","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"SIDE SLAMS","prescription":"12EA","note":""},{"exercise":"TD SQUATS","prescription":"12","note":""},{"exercise":"PARTNER LEG THROW","prescription":"12","note":""},{"exercise":"TOW-MATER PULLS","prescription":"LAP","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"PLANK HIGH 5","prescription":"12EA","note":""},{"exercise":"CHOICE OF LEGS!","prescription":"12","note":""},{"exercise":"ALT KB SWING","prescription":"12EA","note":""},{"exercise":"LATERAL SHUFFLE","prescription":"LAP","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"SUMO HOLDS","prescription":"30S","note":""},{"exercise":"JUMP SQUATS","prescription":"30S","note":""}]}]}]},{"week":"July 27th","summary":"","programs":[{"name":"Forge: Dropset City","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"Sumo Squats","prescription":"10+8","note":""},{"exercise":"Bicep Curl Catches","prescription":"10+8","note":""},{"exercise":"KB Tricep Push up","prescription":"10+8","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"SA Skull Crusher","prescription":"10+8","note":""},{"exercise":"OH Tricep Extension","prescription":"10+8","note":""},{"exercise":"Preacher Curl","prescription":"10+8","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"Tempo Front Squats","prescription":"10+8","note":""},{"exercise":"Concentration Curls","prescription":"10+8","note":""},{"exercise":"SL Bike Crunch","prescription":"15 ea","note":"no band"}]}]},{"name":"HIIT: This or That","mode":"timed","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit A","stations":[{"exercise":"Leg Press/Leg Ext","prescription":"12","note":""},{"exercise":"Incl Tread/Lap","prescription":"12","note":""},{"exercise":"R. Twist/ Hang Leg Raise","prescription":"12","note":""},{"exercise":"Dips/Cable Tricep","prescription":"12","note":""}]},{"name":"Circuit B","stations":[{"exercise":"RDL/LegCurl","prescription":"12","note":""},{"exercise":"Jump Squats/Jump Rope","prescription":"12","note":""},{"exercise":"Side Crunch/Plank Pull Thru","prescription":"12","note":""},{"exercise":"Preacher Machine/Pronated Curl","prescription":"12","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"Lunge Ladder","prescription":"","note":""}]}]},{"name":"Workout 3","mode":"strength","desc":"","rounds":4,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"half kneel press","prescription":"8-10/drop","note":""},{"exercise":"wide neutral pull down","prescription":"8-10/drop","note":""},{"exercise":"SA lean back curl","prescription":"8-10/drop","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"standing calf raise","prescription":"8-10/drop","note":""},{"exercise":"close cable row","prescription":"8-10/drop","note":""},{"exercise":"rollouts","prescription":"8-10/drop","note":""}]}]},{"name":"Ignite","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Warm up","stations":[{"exercise":"Ladder Agility","prescription":"outside","note":""}]},{"name":"Circuit A","stations":[{"exercise":"1/4 mile Cardio","prescription":"modify?","note":""}]},{"name":"Circuit B- 3RNDS","stations":[{"exercise":"Split Squats","prescription":"8ea","note":""},{"exercise":"Plank Shoulder Tap","prescription":"12ea","note":""},{"exercise":"Wall Sits","prescription":"30sec","note":""},{"exercise":"Mountain Climbers","prescription":"15ea","note":""},{"exercise":"Crossover Step ups","prescription":"8ea","note":""},{"exercise":"Diagonal Raise","prescription":"8","note":""}]},{"name":"FINISHER- grab kettlebell","stations":[{"exercise":"halos","prescription":"10ea","note":""},{"exercise":"front squats","prescription":"20","note":""},{"exercise":"over shoulder throws","prescription":"10ea","note":""},{"exercise":"OH press","prescription":"20","note":""},{"exercise":"goblet squats","prescription":"20","note":""},{"exercise":"chest press","prescription":"20","note":""},{"exercise":"swings","prescription":"20","note":""}]}]}]},{"week":"July 27th B","summary":"","programs":[{"name":"Semi Private","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"RDL PAUSE","prescription":"8","note":""},{"exercise":"stack twist","prescription":"30sec","note":""},{"exercise":"underhand pulldowns","prescription":"8ea","note":""},{"exercise":"upright row","prescription":"8-10","note":""},{"exercise":"SA Cable Curl","prescription":"8","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"Farmers Carry","prescription":"outside cones","note":""},{"exercise":"ball slams","prescription":"12","note":""},{"exercise":"rope cable row","prescription":"8","note":""},{"exercise":"jump rope","prescription":"30sec","note":""},{"exercise":"V UPS","prescription":"10","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"1 min bursst","prescription":"60sec","note":""},{"exercise":"squat lunge lunge","prescription":"30sec","note":""}]}]}]},{"week":"August 1st","summary":"","programs":[{"name":"Forge (Push)","mode":"strength","desc":"Optimize Warm up. Superset theme, with high volume warm up and advanced jump in load for primary circuit work","rounds":4,"work":0,"rest":0,"circuits":[{"name":"Circuit A","stations":[{"exercise":"Single Leg Extensions","prescription":"12, 6, 6, 4","note":""},{"exercise":"Single Arm Chest Press","prescription":"12, 6, 6, 4","note":""}]},{"name":"Circuit B","stations":[{"exercise":"Adduction Machine","prescription":"12, 6, 6, 4","note":""},{"exercise":"Cable Chest Fly","prescription":"12, 6, 6, 4","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"SA Rotated Skullcrusher","prescription":"8-10ea","note":""},{"exercise":"KB Closegrip Pushups","prescription":"10-12","note":""},{"exercise":"OH cable tricep ext","prescription":"10-12","note":""},{"exercise":"Sissy Squats","prescription":"8-10","note":""}]}]},{"name":"HIIT A","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"stairs","prescription":"60sec","note":""},{"exercise":"ball slams","prescription":"40sec","note":""},{"exercise":"curl 2 press","prescription":"30sec","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"facepulls","prescription":"10","note":""},{"exercise":"bike crunches","prescription":"12ea","note":""},{"exercise":"diagonal raises","prescription":"10","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"jump rope","prescription":"30sec","note":""},{"exercise":"plank pull thru","prescription":"8-10","note":""}]},{"name":"Circuit 4","stations":[{"exercise":"sumo squats","prescription":"8-10","note":""},{"exercise":"row machine","prescription":"8-10","note":""}]}]},{"name":"IGNITE (T/T)","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"DIPS/FROG PUSH UPS","prescription":"8,10,12+","note":""},{"exercise":"JUMP ROPE/TD SQUATS","prescription":"8,10,12+","note":"30s j rope"},{"exercise":"Russian twist/suitcase crunch","prescription":"8,10,12+","note":""},{"exercise":"inchworms/split squats","prescription":"8,10,12+","note":""},{"exercise":"abduction/RDL","prescription":"8,10,12+","note":""},{"exercise":"leg curl/ball ham curl","prescription":"8,10,12+","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"incline press/standing arnolds","prescription":"8,10,12+","note":""},{"exercise":"OH waiter's carry/Farmer's","prescription":"Lap each side","note":""},{"exercise":"HAMMER CURL/SUPINATED CURL","prescription":"8,10,12+","note":""},{"exercise":"S.S. SLAM/HI swing","prescription":"12ea/18","note":""}]},{"name":"KB BLAST WARM UP","stations":[{"exercise":"push press","prescription":"10","note":""},{"exercise":"OH SQUAT","prescription":"5ea","note":""},{"exercise":"shoulder throws","prescription":"5ea","note":""},{"exercise":"SA swing","prescription":"10ea","note":""},{"exercise":"high pull","prescription":"10","note":""},{"exercise":"pull thru","prescription":"10ea","note":""}]}]},{"name":"1on1","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"stack twist","prescription":"30 sec","note":""},{"exercise":"SS RDL","prescription":"8ea","note":""},{"exercise":"BSS JUMP / SA KB SWING","prescription":"8/12ea","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"SuperCurls","prescription":"10+6-8","note":""},{"exercise":"Seated facepulls","prescription":"12, 8-10","note":""},{"exercise":"SUMO RDL","prescription":"12, 8, 6","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"SA Lo Cable Curl","prescription":"10ea","note":""},{"exercise":"Bent Over Row","prescription":"8-10","note":""},{"exercise":"LAP","prescription":"","note":""}]}]},{"name":"Workout 5","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"WARM UP - 2RNDS","stations":[{"exercise":"MOUNTAIN CLIMBER","prescription":"30SEC","note":""},{"exercise":"TANDEM BEAR CRAWL","prescription":"25SEC","note":""}]},{"name":"Circuit A","stations":[{"exercise":"bike burst","prescription":"40sec","note":""},{"exercise":"diagonal raise","prescription":"10","note":""},{"exercise":"lying toe taps","prescription":"12-15","note":""},{"exercise":"step ups","prescription":"8ea","note":""}]},{"name":"Circuit B","stations":[{"exercise":"elliptical","prescription":"45-60sec","note":""},{"exercise":"side plank clams","prescription":"10ea","note":""},{"exercise":"low x reverse fly","prescription":"12, 10, 10+","note":""},{"exercise":"back extension","prescription":"12, 10, 10+","note":""}]},{"name":"FINISHER","stations":[{"exercise":"DB TEAM LADDER SUICIDE CONE RACE ;)","prescription":"","note":""}]}]}]},{"week":"Week 10","summary":"","programs":[{"name":"Workout","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"Exercise","prescription":"","note":""}]}]}]},{"week":"August 10th","summary":"","programs":[{"name":"FORGE 1","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1 - 4 RNDS","stations":[{"exercise":"SL Leg Press","prescription":"10, 10, 4 + drop","note":""},{"exercise":"Assist Pull up","prescription":"8-10","note":""},{"exercise":"Low High Face Pulls","prescription":"10-12","note":""}]},{"name":"Circuit 2 - 4 RNDS","stations":[{"exercise":"Diagonal Roll Outs","prescription":"8ea","note":""},{"exercise":"ALT Reverse Lunge","prescription":"10, 10, 8ea","note":""}]},{"name":"Circuit 3 - 3RNDS","stations":[{"exercise":"KB Suitcase Crunches","prescription":"10","note":""},{"exercise":"Hollow Holds","prescription":"25sec","note":""},{"exercise":"Diagonal DB Raise","prescription":"10-12","note":""}]}]},{"name":"Ignite","mode":"strength","desc":"2 ROUNDS, MOVE, REST. REPEAT. 4 total rounds broken up","rounds":4,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"Battle Ropes","prescription":"20sec","note":""},{"exercise":"Lateral Raise","prescription":"x12","note":""},{"exercise":"Bicep Curl","prescription":"x10","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"Inchworms","prescription":"20sec","note":""},{"exercise":"Ball Slams","prescription":"x12","note":""},{"exercise":"Front Squats","prescription":"x10","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"Stairs","prescription":"45sec","note":""},{"exercise":"Chest Press","prescription":"x12","note":""},{"exercise":"Tricep Cable","prescription":"x10","note":""}]},{"name":"Circuit 4","stations":[{"exercise":"Limbo Duck Walk","prescription":"","note":""}]}]},{"name":"1ON1","mode":"strength","desc":"","rounds":3,"work":0,"rest":0,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"Adduction Machine","prescription":"12, 8, 6","note":""},{"exercise":"Cable Bicep Curl","prescription":"12, 8, 6","note":""},{"exercise":"Fwd Step Race","prescription":"30sec","note":""}]},{"name":"Circuit 2","stations":[{"exercise":"Underhand Cable Row","prescription":"12, 8, 6","note":""},{"exercise":"Sprinter's Crunch","prescription":"10ea","note":""},{"exercise":"X Farmer's Carry","prescription":"1 lap ea","note":""}]},{"name":"Circuit 3","stations":[{"exercise":"Rev Fly Machine","prescription":"12, 8, 6","note":""},{"exercise":"KB Hinge Swing","prescription":"12","note":""},{"exercise":"AntiRotate Circles","prescription":"10ea","note":""},{"exercise":"LISS Cardio","prescription":"2-3 min","note":""}]}]},{"name":"HIIT 2","mode":"timed","desc":"","rounds":3,"work":40,"rest":20,"circuits":[{"name":"Circuit 1","stations":[{"exercise":"box jumps","prescription":"","note":""},{"exercise":"stack twist","prescription":"","note":""},{"exercise":"forearm rollups","prescription":"","note":""},{"exercise":"rdl row","prescription":"","note":""},{"exercise":"bar tri pulldown","prescription":"","note":""},{"exercise":"incline bench","prescription":"","note":""},{"exercise":"calf raises","prescription":"","note":""},{"exercise":"bike burst","prescription":"","note":""},{"exercise":"sumo squats","prescription":"","note":""},{"exercise":"kelso shrugs","prescription":"","note":""}]}]}]}],"version":538,"installedAt":"2026-08-14T10:30:35.025Z"};
-
-const headers = {
-  'Content-Type': 'application/json; charset=utf-8',
-  'Cache-Control': 'no-store, no-cache, must-revalidate',
-};
+let memoryState = null;
 
 const DEFAULT_STATE = {
-  version: 538,
-  revision: 1,
+  version: 539,
   updatedAt: null,
-  updatedBy: 'system',
-  board: DEFAULT_BOARD,
+  updatedBy: "system",
+  board: null,
   coaches: null,
   clients: null,
+  revision: 0
 };
 
-function reply(statusCode, body) {
-  return { statusCode, headers, body: JSON.stringify(body) };
+const headers = {
+  "Content-Type": "application/json; charset=utf-8",
+  "Cache-Control": "no-store, no-cache, must-revalidate",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
+};
+
+function reply(statusCode, payload) {
+  return { statusCode, headers, body: JSON.stringify(payload) };
 }
 
-function parse(event) {
-  try { return event.body ? JSON.parse(event.body) : {}; }
-  catch (_) { return null; }
+function parseJson(event) {
+  if (!event || !event.body) return {};
+  try { return JSON.parse(event.body); }
+  catch (error) { throw new Error("Invalid JSON body."); }
 }
 
-async function readState(store) {
-  const stored = await store.get('state', { type: 'json' });
-  return { ...DEFAULT_STATE, ...(stored || {}) };
+function mergeState(saved) {
+  return Object.assign({}, DEFAULT_STATE, saved || {});
 }
 
-async function writeState(store, state) {
-  await store.setJSON('state', state);
+async function getBlobStore() {
+  try {
+    const blobs = require("@netlify/blobs");
+    if (!blobs || typeof blobs.getStore !== "function") {
+      throw new Error("@netlify/blobs loaded, but getStore() is unavailable.");
+    }
+
+    // Use the stable positional signature. This works on current Netlify Runtime.
+    return blobs.getStore("axon-server-board");
+  } catch (error) {
+    // Throw a controlled error so the handler returns JSON instead of crashing at module load.
+    throw new Error("Netlify Blobs is unavailable. Confirm @netlify/blobs is installed and deploy ran npm install. Detail: " + (error.message || error));
+  }
+}
+
+async function readState() {
+  // In local preview without Netlify Blobs, memory fallback can prevent total failure.
+  if (process.env.NETLIFY_DEV === "true" && memoryState) return mergeState(memoryState);
+
+  const store = await getBlobStore();
+  const saved = await store.get("axon-server-board-state", { type: "json" });
+  const state = mergeState(saved);
+  if (process.env.NETLIFY_DEV === "true") memoryState = state;
+  return state;
+}
+
+async function writeState(state) {
+  const next = mergeState(state);
+  try {
+    const store = await getBlobStore();
+    await store.setJSON("axon-server-board-state", next);
+  } catch (error) {
+    if (process.env.NETLIFY_DEV === "true") {
+      memoryState = next;
+      return;
+    }
+    throw error;
+  }
+}
+
+function cleanActor(value) {
+  return String(value || "coach").trim() || "coach";
 }
 
 function validBoard(board) {
-  return board && typeof board === 'object' && Array.isArray(board.weeks);
+  return !!board && typeof board === "object" && Array.isArray(board.weeks);
 }
 
-exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers, body: '' };
-  const store = getStore({ name: 'axon-server-board' });
+function validArray(value) {
+  return Array.isArray(value);
+}
 
+exports.handler = async function handler(event) {
   try {
-    if (event.httpMethod === 'GET') {
-      return reply(200, { ok: true, state: await readState(store) });
+    if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers, body: "" };
+
+    if (event.httpMethod === "GET") {
+      const state = await readState();
+      return reply(200, { ok: true, state });
     }
-    if (event.httpMethod !== 'POST') return reply(405, { ok: false, error: 'Method not allowed.' });
 
-    const body = parse(event);
-    if (!body) return reply(400, { ok: false, error: 'Invalid JSON body.' });
+    if (event.httpMethod !== "POST") {
+      return reply(405, { ok: false, error: "Method not allowed." });
+    }
 
-    const action = String(body.action || '').trim();
-    const actor = String(body.actor || 'coach').trim() || 'coach';
-    const state = await readState(store);
+    const body = parseJson(event);
+    const action = String(body.action || "").trim();
+    const actor = cleanActor(body.actor);
+    const state = await readState();
 
-    if (action === 'publishBoard') {
-      if (!validBoard(body.board)) return reply(400, { ok: false, error: 'Board must include weeks.' });
+    if (action === "publishBoard") {
+      if (!validBoard(body.board)) {
+        return reply(400, { ok: false, error: "Invalid board payload. Expected object with weeks array." });
+      }
+
       state.board = body.board;
-    } else if (action === 'publishCoaches') {
-      if (!Array.isArray(body.coaches)) return reply(400, { ok: false, error: 'Coaches must be an array.' });
-      state.coaches = body.coaches;
-    } else if (action === 'publishClients') {
-      if (!Array.isArray(body.clients)) return reply(400, { ok: false, error: 'Clients must be an array.' });
-      state.clients = body.clients;
-    } else if (action === 'publishAll') {
-      if (validBoard(body.board)) state.board = body.board;
-      if (Array.isArray(body.coaches)) state.coaches = body.coaches;
-      if (Array.isArray(body.clients)) state.clients = body.clients;
-    } else if (action === 'reset') {
-      const reset = { ...DEFAULT_STATE, updatedAt: new Date().toISOString(), updatedBy: actor };
-      await writeState(store, reset);
-      return reply(200, { ok: true, state: reset });
-    } else {
-      return reply(400, { ok: false, error: 'Unknown server-board action.' });
+      state.updatedAt = new Date().toISOString();
+      state.updatedBy = actor;
+      state.revision = Number(state.revision || 0) + 1;
+
+      await writeState(state);
+      return reply(200, { ok: true, state });
     }
 
-    state.version = 537;
-    state.revision = Number(state.revision || 0) + 1;
-    state.updatedAt = new Date().toISOString();
-    state.updatedBy = actor;
-    await writeState(store, state);
-    return reply(200, { ok: true, state });
+    if (action === "publishAll") {
+      if (body.board !== undefined) {
+        if (!validBoard(body.board)) return reply(400, { ok: false, error: "Invalid board payload. Expected object with weeks array." });
+        state.board = body.board;
+      }
+      if (body.coaches !== undefined) {
+        if (!validArray(body.coaches)) return reply(400, { ok: false, error: "Invalid coaches payload. Expected array." });
+        state.coaches = body.coaches;
+      }
+      if (body.clients !== undefined) {
+        if (!validArray(body.clients)) return reply(400, { ok: false, error: "Invalid clients payload. Expected array." });
+        state.clients = body.clients;
+      }
+
+      state.updatedAt = new Date().toISOString();
+      state.updatedBy = actor;
+      state.revision = Number(state.revision || 0) + 1;
+
+      await writeState(state);
+      return reply(200, { ok: true, state });
+    }
+
+    if (action === "publishCoaches") {
+      if (!validArray(body.coaches)) return reply(400, { ok: false, error: "Invalid coaches payload. Expected array." });
+      state.coaches = body.coaches;
+      state.updatedAt = new Date().toISOString();
+      state.updatedBy = actor;
+      state.revision = Number(state.revision || 0) + 1;
+      await writeState(state);
+      return reply(200, { ok: true, state });
+    }
+
+    if (action === "publishClients") {
+      if (!validArray(body.clients)) return reply(400, { ok: false, error: "Invalid clients payload. Expected array." });
+      state.clients = body.clients;
+      state.updatedAt = new Date().toISOString();
+      state.updatedBy = actor;
+      state.revision = Number(state.revision || 0) + 1;
+      await writeState(state);
+      return reply(200, { ok: true, state });
+    }
+
+    if (action === "reset") {
+      const resetState = mergeState({
+        version: 539,
+        updatedAt: new Date().toISOString(),
+        updatedBy: actor,
+        board: null,
+        coaches: null,
+        clients: null,
+        revision: 0
+      });
+      await writeState(resetState);
+      return reply(200, { ok: true, state: resetState });
+    }
+
+    return reply(400, { ok: false, error: "Unknown server-board action: " + action });
   } catch (error) {
-    console.error('server-board failed:', error);
-    return reply(500, { ok: false, error: error.message || 'Server board failed.' });
+    console.error("server-board handler failed:", error);
+    return reply(500, {
+      ok: false,
+      error: error.message || "Server board function failed.",
+      hint: "Check Netlify deploy logs for server-board.js. This response is controlled, so it should not appear as a raw 502."
+    });
   }
 };
