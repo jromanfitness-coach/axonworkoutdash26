@@ -109,3 +109,10 @@ Deploy notes:
 - Added a Test Server button inside Server Sync.
 - Removed stale `package-lock.json` so Netlify installs a fresh compatible dependency tree.
 - Keeps the v53.8 installed workout board and server-sync UI.
+
+## v54 Netlify Blobs connectLambda Fix
+- Fixes the exact deployed error: "The environment has not been configured to use Netlify Blobs."
+- Root cause: this project uses Netlify Lambda-compatible Functions, and Blobs must be initialized with `connectLambda(event)` before `getStore()`.
+- Rebuilt `server-board.js` so every request connects the Lambda event before opening the `axon-server-board` store.
+- Keeps optional siteID/token fallback support, but it should not be required after this fix.
+- Keeps the installed workout board and server-sync UI from v53.8/v53.9.

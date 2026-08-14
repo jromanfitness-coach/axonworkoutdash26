@@ -1,7 +1,7 @@
 let memoryState = null;
 
 const DEFAULT_STATE = {
-  version: 539,
+  version: 540,
   updatedAt: null,
   updatedBy: "system",
   board: null,
@@ -32,36 +32,74 @@ function mergeState(saved) {
   return Object.assign({}, DEFAULT_STATE, saved || {});
 }
 
-async function getBlobStore() {
+function loadBlobs() {
   try {
     const blobs = require("@netlify/blobs");
     if (!blobs || typeof blobs.getStore !== "function") {
       throw new Error("@netlify/blobs loaded, but getStore() is unavailable.");
     }
-
-    // Use the stable positional signature. This works on current Netlify Runtime.
-    return blobs.getStore("axon-server-board");
+    return blobs;
   } catch (error) {
-    // Throw a controlled error so the handler returns JSON instead of crashing at module load.
-    throw new Error("Netlify Blobs is unavailable. Confirm @netlify/blobs is installed and deploy ran npm install. Detail: " + (error.message || error));
+    throw new Error("Could not load @netlify/blobs. Confirm Netlify ran npm install. Detail: " + (error.message || error));
   }
 }
 
-async function readState() {
-  // In local preview without Netlify Blobs, memory fallback can prevent total failure.
-  if (process.env.NETLIFY_DEV === "true" && memoryState) return mergeState(memoryState);
+function getBlobStore(event) {
+  const blobs = loadBlobs();
+  const siteID =
+    process.env.NETLIFY_SITE_ID ||
+    process.env.SITE_ID ||
+    process.env.BLOBS_SITE_ID ||
+    process.env.NETLIFY_BLOBS_SITE_ID;
+  const token =
+    process.env.NETLIFY_AUTH_TOKEN ||
+    process.env.NETLIFY_BLOBS_TOKEN ||
+    process.env.BLOBS_TOKEN ||
+    process.env.NETLIFY_TOKEN;
 
-  const store = await getBlobStore();
+  // Primary fix: Lambda compatibility mode requires connectLambda(event)
+  // immediately before getStore().
+  try {
+    if (typeof blobs.connectLambda === "function") {
+      blobs.connectLambda(event);
+    }
+    return blobs.getStore("axon-server-board");
+  } catch (lambdaError) {
+    // Optional fallback for manual/API mode if the user later adds env vars.
+    if (siteID && token) {
+      try {
+        return blobs.getStore({ name: "axon-server-board", siteID, token });
+      } catch (manualError) {
+        throw new Error(
+          "Netlify Blobs failed in Lambda mode and manual siteID/token fallback. Lambda detail: " +
+            (lambdaError.message || lambdaError) +
+            " Manual detail: " +
+            (manualError.message || manualError)
+        );
+      }
+    }
+
+    throw new Error(
+      "Netlify Blobs connection failed. This build now calls connectLambda(event) before getStore(). " +
+        "If this still appears, confirm the deployed function receives the Netlify Blobs event context. Detail: " +
+        (lambdaError.message || lambdaError)
+    );
+  }
+}
+
+async function readState(event) {
+  if (process.env.NETLIFY_DEV === "true" && memoryState) return mergeState(memoryState);
+  const store = getBlobStore(event);
   const saved = await store.get("axon-server-board-state", { type: "json" });
   const state = mergeState(saved);
   if (process.env.NETLIFY_DEV === "true") memoryState = state;
   return state;
 }
 
-async function writeState(state) {
+async function writeState(event, state) {
   const next = mergeState(state);
   try {
-    const store = await getBlobStore();
+    const store = getBlobStore(event);
     await store.setJSON("axon-server-board-state", next);
   } catch (error) {
     if (process.env.NETLIFY_DEV === "true") {
@@ -89,8 +127,16 @@ exports.handler = async function handler(event) {
     if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers, body: "" };
 
     if (event.httpMethod === "GET") {
-      const state = await readState();
-      return reply(200, { ok: true, state });
+      const state = await readState(event);
+      return reply(200, {
+        ok: true,
+        state,
+        runtime: {
+          blobsBridge: "connectLambda",
+          hasEventBlobs: !!(event && event.blobs),
+          version: "v54"
+        }
+      });
     }
 
     if (event.httpMethod !== "POST") {
@@ -100,7 +146,7 @@ exports.handler = async function handler(event) {
     const body = parseJson(event);
     const action = String(body.action || "").trim();
     const actor = cleanActor(body.actor);
-    const state = await readState();
+    const state = await readState(event);
 
     if (action === "publishBoard") {
       if (!validBoard(body.board)) {
@@ -112,7 +158,7 @@ exports.handler = async function handler(event) {
       state.updatedBy = actor;
       state.revision = Number(state.revision || 0) + 1;
 
-      await writeState(state);
+      await writeState(event, state);
       return reply(200, { ok: true, state });
     }
 
@@ -134,7 +180,7 @@ exports.handler = async function handler(event) {
       state.updatedBy = actor;
       state.revision = Number(state.revision || 0) + 1;
 
-      await writeState(state);
+      await writeState(event, state);
       return reply(200, { ok: true, state });
     }
 
@@ -144,7 +190,7 @@ exports.handler = async function handler(event) {
       state.updatedAt = new Date().toISOString();
       state.updatedBy = actor;
       state.revision = Number(state.revision || 0) + 1;
-      await writeState(state);
+      await writeState(event, state);
       return reply(200, { ok: true, state });
     }
 
@@ -154,13 +200,13 @@ exports.handler = async function handler(event) {
       state.updatedAt = new Date().toISOString();
       state.updatedBy = actor;
       state.revision = Number(state.revision || 0) + 1;
-      await writeState(state);
+      await writeState(event, state);
       return reply(200, { ok: true, state });
     }
 
     if (action === "reset") {
       const resetState = mergeState({
-        version: 539,
+        version: 540,
         updatedAt: new Date().toISOString(),
         updatedBy: actor,
         board: null,
@@ -168,7 +214,7 @@ exports.handler = async function handler(event) {
         clients: null,
         revision: 0
       });
-      await writeState(resetState);
+      await writeState(event, resetState);
       return reply(200, { ok: true, state: resetState });
     }
 
@@ -178,7 +224,8 @@ exports.handler = async function handler(event) {
     return reply(500, {
       ok: false,
       error: error.message || "Server board function failed.",
-      hint: "Check Netlify deploy logs for server-board.js. This response is controlled, so it should not appear as a raw 502."
+      hint:
+        "v54 uses connectLambda(event) before getStore(). If this still fails, deploy with Clear cache and check Netlify → Functions → server-board logs."
     });
   }
 };

@@ -1,7 +1,7 @@
 {
-  "version": "53.9.0",
+  "version": "54.0.0",
   "scripts": {
-    "build": "node -e \"console.log('Axon v53.9 server save 502 fix ready.')\""
+    "build": "node -e \"console.log('Axon v54 Netlify Blobs connectLambda fix ready.')\""
   },
   "dependencies": {
     "@netlify/blobs": "^10.0.10"
