@@ -1,9 +1,11 @@
 {
   "name": "axon-workout-dashboard",
-  "version": "50.0.0",
+  "version": "53.8.0",
   "private": true,
   "scripts": {
-    "build": "node -e \"console.log('Axon v50 clean builder rebuild ready')\""
+    "build": "node -e \"console.log('Axon v53.8 uploaded workouts installed.')\""
   },
-  "dependencies": {}
+  "dependencies": {
+    "@netlify/blobs": "^10.0.10"
+  }
 }

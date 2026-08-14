@@ -86,3 +86,27 @@ Upload the contents of this ZIP to the root of the repo. Do not place the files 
 - Renamed management cards to `.coach-account-card` and forced visibility inside the Coaches Management popup.
 - Added clearer status messages when adding, saving, locking, activating, or deleting coaches.
 - Admin1999 can now add a coach and immediately see/edit that coach's username, PIN, and permissions.
+
+## v53.7 Server Board Sync
+- Activated Netlify Functions + Netlify Blobs server board storage.
+- Local Board saves now auto-publish to the server.
+- Coaches can log in from another device and pull the latest server board.
+- New Server Sync popup shows revision, updated-by, pull, publish, publish-all, and reset controls.
+- Coach and client directories can publish to the same server store.
+- Local browser backup remains as an offline fallback.
+- Client portal remains on standby for now.
+
+Deploy notes:
+- Upload all package contents to the repo root.
+- Netlify build command: npm run build.
+- Publish directory: .
+- No BLOBS_SITE_ID or BLOBS_ACCESS_TOKEN env vars are needed for normal Netlify Blobs usage.
+
+
+## v53.8 Installed Uploaded Workouts
+- Installed `axon-workout-dashboard-backup.json` as the default board in the admin dashboard.
+- Embedded the uploaded board into the server-board Netlify Function default state.
+- Server default now includes: 11 weeks, 35 programs, 81 circuits, 278 stations.
+- Added `assets/installed-workout-board-v53-8.json` as a packaged backup copy.
+- Local browsers with older v53.7 board records will automatically load this v53.8 installed board unless their saved board version is already v53.8 or newer.
+- After deploy, use Server Sync → Publish Board + Coaches + Clients to update the live shared server copy if an old server blob already exists.
